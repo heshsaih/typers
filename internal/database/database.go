@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,11 +19,6 @@ type DatabaseConfig struct {
 var Database *gorm.DB = nil
 
 func loadConfig() DatabaseConfig {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalln("Couldn't load .env file")
-		panic(err)
-	}
-
 	return DatabaseConfig{
 		username: os.Getenv("POSTGRES_USERNAME"),
 		password: os.Getenv("POSTGRES_PASSWORD"),
