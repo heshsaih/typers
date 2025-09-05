@@ -1,6 +1,7 @@
 package cryptograpy
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"time"
@@ -41,4 +42,18 @@ func VerifyToken(signedToken string) error {
 	}
 
 	return nil
+}
+
+func HashPassword(plainPassword string) string {
+	hash := sha256.New()
+	hash.Write([]byte(plainPassword))
+	return string(hash.Sum(nil))
+}
+
+func ComparePasswords(password string, hashedPassword string) bool {
+	hash := sha256.New()
+	hash.Write([]byte(password))
+	result := string(hash.Sum(nil))
+
+	return result == hashedPassword
 }
