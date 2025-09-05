@@ -1,22 +1,24 @@
 package cryptograpy
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"os"
 	"time"
+	"typers/internal/model"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateToken(username string) (string, error) {
+func CreateToken(user *model.User) (string, error) {
 	secret := []byte(os.Getenv("CRYPTO_SECRET"))
 	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": username,
-		"iat": now.Unix(),
-		"exp": now.Add(time.Hour * 3).Unix(),
-		"iss": "typers",
+		"sub":  user.Username,
+		"role": user.Role,
+		"iat":  now.Unix(),
+		"exp":  now.Add(time.Hour * 3).Unix(),
+		"iss":  "typers",
 	})
 
 	signedToken, err := token.SignedString(secret)
@@ -44,16 +46,11 @@ func VerifyToken(signedToken string) error {
 	return nil
 }
 
-func HashPassword(plainPassword string) string {
-	hash := sha256.New()
-	hash.Write([]byte(plainPassword))
-	return string(hash.Sum(nil))
+func HashPassword(plainPassword string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(plainPassword), 14)
+	return string(bytes), err
 }
 
-func ComparePasswords(password string, hashedPassword string) bool {
-	hash := sha256.New()
-	hash.Write([]byte(password))
-	result := string(hash.Sum(nil))
-
-	return result == hashedPassword
+func ComparePasswords(hashedPassword string, plainPassword string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword)) == nil
 }

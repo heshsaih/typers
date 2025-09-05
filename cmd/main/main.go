@@ -17,8 +17,11 @@ func main() {
 	database.ConnectToDatabase()
 
 	router := gin.Default()
-	router.GET("/ping/:username", handlers.HandlePing)
-	router.GET("/pong", handlers.HandlePong)
+	defaultGroup := router.Group("/api/v1")
+
+	//auth
+	defaultGroup.POST("/auth/register", handlers.HandleRegister)
+	defaultGroup.POST("/auth/login", handlers.HandleLogin)
 
 	router.Run()
 }
