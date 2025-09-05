@@ -71,7 +71,7 @@ func HandleLogin(c *gin.Context) {
 	var user *model.User
 	if err := database.Database.Where("username = ?", requestBody.Username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{
+			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "user not found",
 			})
 			return
@@ -83,7 +83,7 @@ func HandleLogin(c *gin.Context) {
 	}
 
 	if !cryptograpy.ComparePasswords(user.Password, requestBody.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "invalid password",
 		})
 		return
@@ -92,7 +92,7 @@ func HandleLogin(c *gin.Context) {
 	token, err := cryptograpy.CreateToken(user)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": err.Error(),
 		})
 		return

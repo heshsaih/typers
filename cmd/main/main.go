@@ -1,11 +1,14 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"typers/internal/database"
 	"typers/internal/handlers"
+	"typers/internal/middlewares"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -22,6 +25,15 @@ func main() {
 	//auth
 	defaultGroup.POST("/auth/register", handlers.HandleRegister)
 	defaultGroup.POST("/auth/login", handlers.HandleLogin)
+
+	//guarded
+	guardedGroup := defaultGroup.Group("/")
+	guardedGroup.Use(middlewares.AuthenticatedMiddleware)
+	guardedGroup.GET("/foo", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"bar": "buzz",
+		})
+	})
 
 	router.Run()
 }
