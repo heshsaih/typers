@@ -1,11 +1,9 @@
-import { FC } from "react";
+import { type FC } from "react";
 
-const LoginPage: FC = () => {
+export const LoginPage: FC = () => {
     return (
         <div>
             <h1>Login page</h1>
         </div>
     );
 };
-
-export default LoginPage;

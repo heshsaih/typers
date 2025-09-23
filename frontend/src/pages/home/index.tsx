@@ -1,12 +1,10 @@
 import { type FC } from "react";
-import Container from "../../components/Container";
+import { Heading } from "../../components/heading";
 
-const HomePage: FC = () => {
+export const HomePage: FC = () => {
     return (
-        <Container>
-            <h1>Home page</h1>
-        </Container>
+        <div>
+            <Heading type="h1">fortnut</Heading>
+        </div>
     );
 };
-
-export default HomePage;

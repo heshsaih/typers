@@ -1,13 +1,20 @@
-import { type ComponentProps, type FC, type PropsWithChildren } from "react";
+import type { FC, HTMLAttributes, PropsWithChildren } from "react";
 
-type ContainerProps = PropsWithChildren & ComponentProps<'div'> & {};
+type ContainerProps = HTMLAttributes<HTMLDivElement> & PropsWithChildren;
 
-const Container: FC<ContainerProps> = ({ children, className, ...rest }) => {
+export const Container: FC<ContainerProps> = ({
+    children,
+    className,
+    ...rest
+}) => {
     return (
-        <div className={"flex flex-col justify-center items-center " + className} {...rest}>
+        <div
+            className={
+                "flex flex-col justify-start items-center " + (className ?? "")
+            }
+            {...rest}
+        >
             {children}
         </div>
     );
 };
-
-export default Container;
