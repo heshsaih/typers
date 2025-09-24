@@ -2,6 +2,8 @@ import type { FC } from "react";
 
 export const Footer: FC =() => {
     return <div>
-        <h1>footer</h1>
+        <footer className="text-text-disabled">
+            <p>foo bar</p>
+        </footer>
     </div>
 }

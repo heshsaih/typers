@@ -6,12 +6,12 @@ import { Container } from "../components/container";
 
 export const DefaultLayout: FC = () => {
     return (
-        <div>
-            <Navbar></Navbar>
-            <Container className="container h-48 w-screen">
+        <Container className="h-screen">
+            <Container className="container min-h-8/12">
+                <Navbar></Navbar>
                 <Outlet></Outlet>
             </Container>
             <Footer></Footer>
-        </div>
+        </Container>
     );
 };
