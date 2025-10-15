@@ -7,6 +7,7 @@
   --color-accent-secondary: #4a3a3a;
   --color-focus: #ffffff;
   --color-text: #d3dad9;
+  --color-error: #e02b2b;
   --color-text-disabled: #696969;
 }
 
@@ -25,5 +26,4 @@ html {
     .display-none {
         display: none;
     }
-
 }
