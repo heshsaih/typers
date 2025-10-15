@@ -5,6 +5,7 @@
   --color-background-secondary: #44444e;
   --color-accent-primary: #715a5a;
   --color-accent-secondary: #4a3a3a;
+  --color-focus: #ffffff;
   --color-text: #d3dad9;
   --color-text-disabled: #696969;
 }
@@ -24,4 +25,5 @@ html {
     .display-none {
         display: none;
     }
+
 }

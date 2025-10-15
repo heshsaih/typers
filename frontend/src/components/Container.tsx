@@ -10,7 +10,7 @@ export const Container: FC<ContainerProps> = ({
     return (
         <div
             className={
-                "flex flex-col justify-start items-center " + (className ?? "")
+                "flex flex-col w-full justify-start items-center " + (className ?? "")
             }
             {...rest}
         >

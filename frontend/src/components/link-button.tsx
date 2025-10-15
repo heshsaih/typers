@@ -17,9 +17,8 @@ export const LinkButton: FC<LinkButtonProps> = ({
     to,
     ...rest
 }) => {
-    const borderType = border ?? "none";
     const borderClass: string = (() => {
-        switch (borderType) {
+        switch (border) {
             case "left":
                 return "border-l";
             case "right":

@@ -1,13 +1,13 @@
 import type { FC } from "react";
 import { LinkButton } from "./link-button";
 import { Heading } from "./heading";
-import { useMobileView } from "../hooks/useMobileView";
+import { useViewport } from "../hooks/use-viewport";
 
 export const Navbar: FC = () => {
-    const { isMobile } = useMobileView();
+    const { isMobile } = useViewport();
 
     return (
-        <div className="w-full static top-0 left-0 mb-5 p-3 flex justify-between px-4">
+        <div className="w-full static top-0 left-0 mb-5 p-1 flex justify-between px-6 pb-2 border-b border-accent-secondary">
             <div className="flex justify-center w-fit">
                 <LinkButton to="/" changeOnHover={false}>
                     <Heading style={{ margin: 0 }} type="h4">Typers</Heading>
