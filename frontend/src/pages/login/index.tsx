@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../hooks/use-auth";
+import { Link } from "../../components/link";
+import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
     username: z.string().min(4, "Username is too short"),
@@ -17,13 +19,13 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export const LoginPage: FC = () => {
+    const navigate = useNavigate();
     const a = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
-    const {login} = useAuth();
+    const { login } = useAuth();
 
     const handleSubmit = a.handleSubmit((data) => {
-        console.log(data);
         login.mutate(data);
     });
 
@@ -38,17 +40,19 @@ export const LoginPage: FC = () => {
                     <Input
                         {...a.register("username")}
                         error={a.formState.errors.username?.message}
-                        name="username"
                         label="Username"
                     ></Input>
                     <Input
                         {...a.register("password")}
-                        name="password"
                         error={a.formState.errors.password?.message}
                         label="Password"
                         type="password"
                     ></Input>
-                    <Button type="submit">Login</Button>
+                    <Button disabled={login.isPending} isPending={login.isPending} type="submit">Login</Button>
+                    <Paragraph>
+                        You don't have an account yet?{" "}
+                        <Link onClick={() => navigate("/register")}>Register now!</Link>
+                    </Paragraph>
                 </Container>
             </form>
         </Container>

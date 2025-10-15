@@ -23,7 +23,25 @@ html {
 }
 
 @media (max-width: 480px) {
-    .display-none {
-        display: none;
-    }
+  .display-none {
+    display: none;
+  }
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 5px solid var(--color-text);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

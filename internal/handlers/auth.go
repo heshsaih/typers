@@ -9,6 +9,7 @@ import (
 	"typers/internal/model"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ func HandleRegister(c *gin.Context) {
 		Password string `json:"password" binding:"required,min=8"`
 	}
 
-	if err := c.BindJSON(&requestBody); err != nil {
+	if err := c.ShouldBindBodyWith(&requestBody, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})

@@ -20,6 +20,8 @@ func main() {
 	database.ConnectToDatabase()
 
 	router := gin.Default()
+	router.Use(middlewares.CORSMiddleware)
+
 	defaultGroup := router.Group("/api/v1")
 
 	//auth
@@ -29,7 +31,7 @@ func main() {
 	//guarded
 	guardedGroup := defaultGroup.Group("/")
 	guardedGroup.Use(middlewares.AuthenticatedMiddleware)
-	guardedGroup.GET("/foo", func(ctx *gin.Context) {
+	guardedGroup.GET("/foo123", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"bar": "buzz",
 		})

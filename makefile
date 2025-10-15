@@ -1,5 +1,5 @@
 run-app:
-	go run cmd/main/main.go
+	go build cmd/main/main.go && ./main.exe
 
 migrate-db:
 	go run cmd/migrate/migrate.go
