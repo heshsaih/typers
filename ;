@@ -2,8 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useAxiosClient } from "../api/config";
 import { useNavigate } from "react-router";
 import { parseJWT } from "../util";
-import { AxiosError } from "axios";
-import { Errors, type ErrorsKeys } from "../types/errors";
 
 type LoginRequest = {
     username: string;
@@ -26,10 +24,7 @@ export const useAuth = () => {
                 //@ts-ignore
                 return response.headers.getAuthorization() as string | undefined;
             } catch (e) {
-                if (e instanceof AxiosError) {
-                    throw Errors[e.response?.data.error as ErrorsKeys];
-                }
-                throw Errors.UNKNOWN_ERROR;
+                throw "asdasdhaskdahdkjashdkjash";
             }
         },
         onSuccess: (token) => {
@@ -49,7 +44,7 @@ export const useAuth = () => {
         },
         onSuccess: () => {
             navigate("/login");
-        },
+        }
     });
 
     return {

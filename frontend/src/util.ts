@@ -8,7 +8,7 @@ type JWT = {
     sub: string;
 };
 
-export const parseJWT = (token: string | undefined): JWT | null => {
+export const parseJWT = (token: string | undefined | null): JWT | null => {
     if (!token) {
         return null;
     }

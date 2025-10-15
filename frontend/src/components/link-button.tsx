@@ -1,9 +1,9 @@
-import type { FC, HTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, FC } from "react";
 import { useNavigate } from "react-router";
 
 type BorderType = "left" | "right" | "both" | "none";
 
-type LinkButtonProps = HTMLAttributes<HTMLButtonElement> & {
+type LinkButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     border?: BorderType;
     to: string;
     changeOnHover?: boolean;

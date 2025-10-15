@@ -48,7 +48,16 @@ export const LoginPage: FC = () => {
                         label="Password"
                         type="password"
                     ></Input>
-                    <Button disabled={login.isPending} isPending={login.isPending} type="submit">Login</Button>
+                    {login.error && (
+                        <Paragraph className="text-error">{login.error}</Paragraph>
+                    )}
+                    <Button
+                        disabled={login.isPending}
+                        isPending={login.isPending}
+                        type="submit"
+                    >
+                        Login
+                    </Button>
                     <Paragraph>
                         You don't have an account yet?{" "}
                         <Link onClick={() => navigate("/register")}>Register now!</Link>
