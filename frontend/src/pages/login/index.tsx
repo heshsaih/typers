@@ -9,7 +9,6 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../hooks/use-auth";
 import { Link } from "../../components/link";
-import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
     username: z.string().min(4, "Username is too short"),
@@ -19,7 +18,6 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export const LoginPage: FC = () => {
-    const navigate = useNavigate();
     const a = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
@@ -60,7 +58,7 @@ export const LoginPage: FC = () => {
                     </Button>
                     <Paragraph>
                         You don't have an account yet?{" "}
-                        <Link onClick={() => navigate("/register")}>Register now!</Link>
+                        <Link to="/register">Register now!</Link>
                     </Paragraph>
                 </Container>
             </form>

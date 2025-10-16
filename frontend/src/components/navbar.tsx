@@ -1,12 +1,16 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { LinkButton } from "./link-button";
 import { Heading } from "./heading";
 import { useViewport } from "../hooks/use-viewport";
 import { parseJWT } from "../util";
+import { Dropdown } from "./dropdown/dropdown";
+import { DropdownButton } from "./dropdown/dropdown-button";
+import { useNavigate } from "react-router";
 
 export const Navbar: FC = () => {
     const { isMobile } = useViewport();
-    const token = parseJWT(localStorage.getItem("token"));
+    const navigate = useNavigate();
+    const [token, setToken] = useState(parseJWT(localStorage.getItem("token")));
 
     return (
         <div className="w-full static top-0 left-0 mb-5 p-1 flex justify-between px-6 pb-2 border-b border-accent-secondary">
@@ -27,9 +31,23 @@ export const Navbar: FC = () => {
                             Games
                         </LinkButton>
                     </div>
-                    <LinkButton to="/login" border="both">
-                        {token ? token.sub : "Log in"}
-                    </LinkButton>
+                    {token ? (
+                        <Dropdown label={token.sub}>
+                            <DropdownButton onClick={() => navigate("/profile")}>
+                                My profile
+                            </DropdownButton>
+                            <DropdownButton onClick={() => {
+                                localStorage.removeItem("token")
+                                setToken(null);
+                            }}>
+                                Logout
+                            </DropdownButton>
+                        </Dropdown>
+                    ) : (
+                        <LinkButton to="/login" border="both">
+                            Log in
+                        </LinkButton>
+                    )}
                 </div>
             )}
         </div>

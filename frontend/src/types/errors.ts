@@ -3,7 +3,8 @@ export const Errors = {
     UNKNOWN_ERROR: "Something unexpected happened ;_;",
 } as const;
 
-export type ErrorsValues = typeof Errors[keyof typeof Errors];
+export type ErrorsKeys = keyof typeof Errors;
+export type ErrorsValues = (typeof Errors)[ErrorsKeys];
 
 export type ErrorResponse = {
     error: ErrorsValues;

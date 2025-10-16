@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { useAuth } from "../../hooks/use-auth";
+import { Link } from "../../components/link";
 
 const registerSchema = z.object({
     username: z.string().min(4, "Username is too short"),
@@ -48,6 +49,7 @@ export const RegisterPage: FC = () => {
                         error={a.formState.errors.password?.message}
                     ></Input>
                     <Button isPending={register.isPending} disabled={register.isPending} type="submit">Register</Button>
+                    <Paragraph>Already have an accout? <Link to="/login">Log in!</Link></Paragraph>
                 </Container>
             </form>
         </Container>

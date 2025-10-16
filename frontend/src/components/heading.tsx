@@ -50,7 +50,12 @@ const defaultHeadingStyles: Record<HeadingType, CSSProperties> = {
     },
 };
 
-export const Heading: FC<HeadingProps> = ({ type, style, className, ...rest }) => {
+export const Heading: FC<HeadingProps> = ({
+    type,
+    style,
+    className,
+    ...rest
+}) => {
     const headingType: HeadingType = Object.keys(defaultHeadingStyles).includes(
         type,
     )
@@ -59,6 +64,7 @@ export const Heading: FC<HeadingProps> = ({ type, style, className, ...rest }) =
     const styles = defaultHeadingStyles[type];
 
     return createElement(headingType, {
+        className: `${className}`,
         style: {
             ...styles,
             ...style,

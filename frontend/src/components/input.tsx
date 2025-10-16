@@ -13,7 +13,7 @@ export const Input: FC<InputProps> = ({ className, style, label, error, ...rest 
         <div className="m-1 flex flex-col">
             <label>{label}</label>
             <input
-                className={`border ${border} rounded-sm p-1 ${className}`}
+                className={`border ${border} rounded-sm p-1 focus:outline ${className}`}
                 style={style}
                 {...rest}
             ></input>

@@ -5,6 +5,7 @@ import { DefaultLayout } from "./layouts/default-layout";
 import { TypingPage } from "./pages/typing";
 import { GamesPage } from "./pages/games";
 import { RegisterPage } from "./pages/register";
+import { ProfilePage } from "./pages/profile";
 
 const routes: RouteObject[] = [
     {
@@ -30,6 +31,10 @@ const routes: RouteObject[] = [
             {
                 path: "/register",
                 Component: RegisterPage,
+            },
+            {
+                path: "profile",
+                Component: ProfilePage,
             },
         ],
     },
