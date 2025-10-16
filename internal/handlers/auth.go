@@ -6,6 +6,7 @@ import (
 	"net/http"
 	cryptograpy "typers/internal/cryptography"
 	"typers/internal/database"
+	"typers/internal/enums"
 	"typers/internal/model"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ func HandleRegister(c *gin.Context) {
 
 	if err := c.ShouldBindBodyWith(&requestBody, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": model.INVALID_BODY,
+			"error": enums.ERR_INVALID_BODY,
 		})
 		return
 	}
@@ -29,7 +30,7 @@ func HandleRegister(c *gin.Context) {
 	hashedPassword, err := cryptograpy.HashPassword(requestBody.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": model.INVALID_BODY,
+			"error": enums.ERR_INVALID_BODY,
 		})
 		return
 	}
@@ -37,18 +38,18 @@ func HandleRegister(c *gin.Context) {
 	newUser := model.User{
 		Username: requestBody.Username,
 		Password: hashedPassword,
-		Role:     model.USER_ROLE,
+		Role:     enums.ROLE_USER,
 	}
 
 	if err := database.Database.Create(&newUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": model.USERNAME_TAKEN,
+				"error": enums.ERR_USERNAME_TAKEN,
 			})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": model.INTERNAL_SERVER_ERROR,
+			"error": enums.ERR_INTERNAL_SERVER_ERROR,
 		})
 		return
 	}
@@ -64,7 +65,7 @@ func HandleLogin(c *gin.Context) {
 
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": model.INVALID_BODY,
+			"error": enums.ERR_INVALID_BODY,
 		})
 		return
 	}
@@ -73,19 +74,19 @@ func HandleLogin(c *gin.Context) {
 	if err := database.Database.Where("username = ?", requestBody.Username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": model.INVALID_PASSWORD,
+				"error": enums.ERR_INVALID_PASSWORD,
 			})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": model.INTERNAL_SERVER_ERROR,
+			"error": enums.ERR_INTERNAL_SERVER_ERROR,
 		})
 		return
 	}
 
 	if !cryptograpy.ComparePasswords(user.Password, requestBody.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": model.INVALID_PASSWORD,
+			"error": enums.ERR_INVALID_PASSWORD,
 		})
 		return
 	}
@@ -94,7 +95,7 @@ func HandleLogin(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": model.INVALID_PASSWORD,
+			"error": enums.ERR_INVALID_PASSWORD,
 		})
 		return
 	}
