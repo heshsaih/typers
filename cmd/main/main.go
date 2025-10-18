@@ -27,6 +27,7 @@ func main() {
 	//auth
 	defaultGroup.POST("/auth/register", handlers.HandleRegister)
 	defaultGroup.POST("/auth/login", handlers.HandleLogin)
+	defaultGroup.GET("/typing/words", handlers.HandleGetWords)
 
 	//guarded
 	guardedGroup := defaultGroup.Group("/")
