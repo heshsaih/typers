@@ -13,8 +13,9 @@ func main() {
 		log.Fatalln("Couldn't load .env file")
 		panic(err)
 	}
-	
+
 	database.ConnectToDatabase()
 
 	database.Database.AutoMigrate(&model.User{})
+	database.Database.AutoMigrate(&model.Session{})
 }

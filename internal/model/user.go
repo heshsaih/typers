@@ -10,4 +10,5 @@ type User struct {
 	Username string `gorm:"uniqueIndex"`
 	Password string
 	Role     enums.Role
+	Sessions []Session `gorm:"foreigKey:UserID;constraint:OnDelete:CASCADE"`
 }

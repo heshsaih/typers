@@ -1,39 +1,23 @@
 package middlewares
 
 import (
+	"log"
 	"net/http"
 	"strings"
 	cryptograpy "typers/internal/cryptography"
+	"typers/internal/enums"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AuthenticatedMiddleware(c *gin.Context) {
-	authHeader := c.GetHeader("Authorization")
+	_, exists := c.Get("user")
 
-	if len(authHeader) == 0 {
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "authentication required",
+			"error": enums.ERR_ACCESS_DENIED,
 		})
 		c.Abort()
-		return
-	}
-
-	splitHeader := strings.Split(authHeader, " ")
-	if len(splitHeader) < 2 || (len(splitHeader) > 0 && splitHeader[0] != "Bearer") {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid authentication header",
-		})
-		c.Abort()
-		return
-	}
-
-	if cryptograpy.VerifyToken(splitHeader[1]) != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid authentication token",
-		})
-		c.Abort()
-		return
 	}
 
 	c.Next()
@@ -49,6 +33,36 @@ func CORSMiddleware(c *gin.Context) {
 	if c.Request.Method == "OPTIONS" {
 		c.AbortWithStatus(204)
 		return
+	}
+
+	c.Next()
+}
+
+func RetrieveAuthenticationMiddleware(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+
+	if len(authHeader) == 0 {
+		c.Next()
+		return
+	}
+
+	splitHeader := strings.Split(authHeader, " ")
+	if len(splitHeader) < 2 || (len(splitHeader) > 0 && splitHeader[0] != "Bearer") {
+		c.Next()
+		return
+	}
+
+	token, err := cryptograpy.ParseToken(splitHeader[1]); if err != nil {
+		c.Next()
+		return
+	}
+
+	if subject, err := token.Claims.GetSubject(); err != nil  {
+		c.Next()
+		return
+	} else {
+		c.Set("user", subject)
+		log.Println("retrieved authentication for: {}", subject)
 	}
 
 	c.Next()

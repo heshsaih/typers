@@ -3,9 +3,12 @@ package enums
 type ErrorMessage string
 
 const (
+	ERR_ACCESS_DENIED         ErrorMessage = "ACCESS_DENIED"
 	ERR_INVALID_BODY          ErrorMessage = "INVALID_BODY"
 	ERR_USERNAME_TAKEN        ErrorMessage = "USER_EXISTS"
 	ERR_INVALID_PASSWORD      ErrorMessage = "INVALID_PASSWORD"
 	ERR_INTERNAL_SERVER_ERROR ErrorMessage = "INTERNAL_SERVER_ERROR"
-
-	ERR_WORD_API_UNAVAILABLE ErrorMessage = "ERR_WORD_API_UNAVAILABLE")
+	ERR_USER_NOT_FOUND        ErrorMessage = "USER_NOT_FOUND"
+	ERR_OPEN_SESSION          ErrorMessage = "OPEN_SESSION"
+	ERR_WORD_API_UNAVAILABLE  ErrorMessage = "WORD_API_UNAVAILABLE"
+)

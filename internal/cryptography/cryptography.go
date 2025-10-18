@@ -30,20 +30,20 @@ func CreateToken(user *model.User) (string, error) {
 	return signedToken, nil
 }
 
-func VerifyToken(signedToken string) error {
+func ParseToken(signedToken string) (token *jwt.Token, error1 error) {
 	token, err := jwt.Parse(signedToken, func(token *jwt.Token) (any, error) {
 		return []byte(os.Getenv("CRYPTO_SECRET")), nil
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
-	return nil
+	return token, nil
 }
 
 func HashPassword(plainPassword string) (string, error) {

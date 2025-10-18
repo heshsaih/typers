@@ -1,5 +1,4 @@
 #BACKEND
-.env
 main.exe
 
 #FRONTEND
@@ -28,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#not this time :33
+server.crt
+server.key
+.env
