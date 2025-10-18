@@ -1,9 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
 import { useAxiosClient } from "../api/config";
 import { useNavigate } from "react-router";
 import { parseJWT } from "../util";
 import { AxiosError } from "axios";
 import { Errors, type ErrorsKeys } from "../types/errors";
+import { useMutation } from "@tanstack/react-query";
+import { useAccountStore } from "../stores/use-account-store";
 
 type LoginRequest = {
     username: string;
@@ -18,6 +19,7 @@ type RegisterRequest = {
 export const useAuth = () => {
     const client = useAxiosClient();
     const navigate = useNavigate();
+    const { setToken } = useAccountStore();
 
     const login = useMutation({
         mutationFn: async (payload: LoginRequest) => {
@@ -36,7 +38,7 @@ export const useAuth = () => {
             const parsedToken = parseJWT(token);
 
             if (parsedToken) {
-                localStorage.setItem("token", token!);
+                setToken(parsedToken);
             }
 
             navigate("/typing");

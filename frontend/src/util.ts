@@ -1,12 +1,4 @@
-import type { RoleType } from "./types/role";
-
-type JWT = {
-    exp: number;
-    iat: number;
-    iss: string;
-    role: RoleType;
-    sub: string;
-};
+import type { JWT } from "./types";
 
 export const parseJWT = (token: string | undefined | null): JWT | null => {
     if (!token) {
