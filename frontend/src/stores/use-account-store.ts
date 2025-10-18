@@ -4,21 +4,35 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { parseJWT } from "../util";
 
 type AccountStore = {
-    token: JWT | null;
-    setToken: (newToken: JWT | null) => void;
+    parsedToken?: JWT | null;
+    token?: string | null;
+    setToken: (newToken?: string | null) => void;
 };
 
 export const useAccountStore = create<AccountStore>()(
     persist(
         (set) => ({
+            parsedToken: null,
             token: null,
-            setToken: (newToken) => set({ token: newToken }),
+            setToken: (newToken) =>
+                set({ token: newToken, parsedToken: parseJWT(newToken) }),
         }),
         {
             name: "token",
-            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ token: state.token }),
+            storage: createJSONStorage(() => sessionStorage),
             onRehydrateStorage: (state) => {
-                state.token = parseJWT(localStorage.getItem("token"));
+                const token = sessionStorage.getItem("token");
+                if (token) {
+                    try {
+                        state.token = token;
+                        state.parsedToken = parseJWT(JSON.parse(token).state.token);
+                    } catch (_) {
+                        sessionStorage.removeItem("token");
+                        state.token = null;
+                        state.parsedToken = null;
+                    }
+                }
             },
         },
     ),

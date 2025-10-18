@@ -1,6 +1,5 @@
 import { useAxiosClient } from "../api/config";
 import { useNavigate } from "react-router";
-import { parseJWT } from "../util";
 import { AxiosError } from "axios";
 import { Errors, type ErrorsKeys } from "../types/errors";
 import { useMutation } from "@tanstack/react-query";
@@ -35,12 +34,7 @@ export const useAuth = () => {
             }
         },
         onSuccess: (token) => {
-            const parsedToken = parseJWT(token);
-
-            if (parsedToken) {
-                setToken(parsedToken);
-            }
-
+            setToken(token);
             navigate("/typing");
         },
     });

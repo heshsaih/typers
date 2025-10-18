@@ -52,12 +52,13 @@ func RetrieveAuthenticationMiddleware(c *gin.Context) {
 		return
 	}
 
-	token, err := cryptograpy.ParseToken(splitHeader[1]); if err != nil {
+	token, err := cryptograpy.ParseToken(splitHeader[1])
+	if err != nil {
 		c.Next()
 		return
 	}
 
-	if subject, err := token.Claims.GetSubject(); err != nil  {
+	if subject, err := token.Claims.GetSubject(); err != nil {
 		c.Next()
 		return
 	} else {

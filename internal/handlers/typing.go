@@ -2,17 +2,18 @@ package handlers
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
+	cryptograpy "typers/internal/cryptography"
 	"typers/internal/database"
 	"typers/internal/enums"
 	"typers/internal/model"
 	"typers/internal/services"
-
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"gorm.io/gorm"
 )
 
 var upgrader = websocket.Upgrader{
@@ -45,16 +46,43 @@ func HandleGetWords(c *gin.Context) {
 }
 
 func HandleSession(c *gin.Context) {
-	username, exists := c.Get("user")
-	var session *model.Session
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": enums.ERR_INTERNAL_SERVER_ERROR,
+		})
+		return
+	}
+	defer conn.Close()
 
-	if exists {
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		return
+	}
+
+	splitToken := strings.Split(string(message), " ")
+	if len(splitToken) != 2 {
+		conn.WriteMessage(1003, []byte(enums.ERR_INVALID_TOKEN))
+		return
+	}
+
+	var session *model.Session = nil
+
+	token, err := cryptograpy.ParseToken(splitToken[1])
+	if err != nil {
+		log.Println("User is anonymous, continuing")
+	} else {
+		subject, err := token.Claims.GetSubject()
+		if err != nil {
+			conn.WriteMessage(1003, []byte(enums.ERR_INVALID_TOKEN))
+			return
+		}
+		log.Println("User: ", subject)
+
 		user := model.User{}
-		if err := database.Database.Where("username = ?", username).First(&user).Error; err != nil {
+		if err := database.Database.Where("username = ?", subject).First(&user).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				c.JSON(http.StatusNotFound, gin.H{
-					"error": enums.ERR_USER_NOT_FOUND,
-				})
+				conn.WriteMessage(1003, []byte(enums.ERR_USER_NOT_FOUND))
 				return
 			}
 		}
@@ -67,46 +95,30 @@ func HandleSession(c *gin.Context) {
 		if err := database.Database.Create(session).Error; err != nil {
 			log.Println(err)
 			if errors.Is(err, gorm.ErrDuplicatedKey) {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": enums.ERR_OPEN_SESSION,
-				})
+				conn.WriteMessage(1003, []byte(enums.ERR_OPEN_SESSION))
 				return
 			}
+			conn.WriteMessage(1011, []byte(enums.ERR_INTERNAL_SERVER_ERROR))
+			return
 		}
 	}
 
-	log.Println("before upgrader")
-
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": enums.ERR_INTERNAL_SERVER_ERROR,
-		})
-		return
-	}
-
-	log.Println("after upgrader")
-
 	defer func() {
-		conn.Close()
 		if session != nil {
 			session.Active = false
-			database.Database.Delete(session)
+			database.Database.Save(session)
 		}
 	}()
 
 	for {
-		log.Println("reading...")
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Error: failed to read message")
 			return
 		}
 
 		log.Println("Retrieved message: ", string(message))
 
 		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			log.Println("Error: failed to write message")
 			return
 		}
 	}

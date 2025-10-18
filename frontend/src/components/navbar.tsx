@@ -10,7 +10,7 @@ import { useAccountStore } from "../stores/use-account-store";
 export const Navbar: FC = () => {
     const { isMobile } = useViewport();
     const navigate = useNavigate();
-    const { token, setToken } = useAccountStore();
+    const { parsedToken, setToken } = useAccountStore();
 
     return (
         <div className="w-full static top-0 left-0 mb-5 p-1 flex justify-between px-6 pb-2 border-b border-accent-secondary">
@@ -24,21 +24,22 @@ export const Navbar: FC = () => {
             {!isMobile && (
                 <div className="w-full flex justify-between display-none">
                     <div className="flex">
-                        <LinkButton to="/" border="left">
+                        <LinkButton to="/typing" border="left">
                             Typing
                         </LinkButton>
-                        <LinkButton to="/" border="both">
+                        <LinkButton to="/games" border="both">
                             Games
                         </LinkButton>
                     </div>
-                    {token ? (
-                        <Dropdown label={token.sub}>
+                    {parsedToken ? (
+                        <Dropdown label={parsedToken.sub}>
                             <DropdownButton onClick={() => navigate("/profile")}>
                                 My profile
                             </DropdownButton>
                             <DropdownButton
                                 onClick={() => {
                                     setToken(null);
+                                    navigate("/")
                                 }}
                             >
                                 Logout

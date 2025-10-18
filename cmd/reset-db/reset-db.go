@@ -20,4 +20,7 @@ func main() {
 
 	migrator.DropTable(model.User{})
 	migrator.CreateTable(model.User{})
+
+	migrator.DropTable(model.Session{})
+	migrator.CreateTable(model.Session{})
 }
