@@ -6,14 +6,13 @@ import { Paragraph } from "../../components/paragraph";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { useAccountStore } from "../../stores/use-account-store";
+import { SessionMessage, USER_UNAUTHENTICATED, type SessionMessageType } from "../../types";
 
 export const TypingPage: FC = () => {
-    const { sendMessage, lastMessage, readyState } = useWebSocket(
-        "wss://localhost:42069/api/v1/typing",
-        {
+    const { sendJsonMessage, lastJsonMessage, readyState } =
+        useWebSocket<SessionMessageType>("wss://localhost:42069/api/v1/typing", {
             shouldReconnect: () => false,
-        },
-    );
+        });
     const { token } = useAccountStore();
     const [message, setMessage] = useState<string>("");
     const [authenticated, setAuthenticated] = useState<boolean>(false);
@@ -21,25 +20,37 @@ export const TypingPage: FC = () => {
     useEffect(() => {
         console.log("WS State: ", readyState);
         if (readyState === ReadyState.OPEN && !authenticated) {
-            sendMessage(token ?? "");
+            sendJsonMessage<SessionMessageType>({
+                messageType: SessionMessage.AUTH,
+                data: token ?? USER_UNAUTHENTICATED,
+            });
             setAuthenticated(true);
-        }    
+        }
     }, [readyState]);
 
     useEffect(() => {
-        console.log("Message: ", lastMessage);
-    }, [lastMessage]);
+        console.log("Message: ", lastJsonMessage?.messageType);
+    }, [lastJsonMessage]);
 
     return (
         <Container>
             <Heading type="h2">Typing</Heading>
             <Heading type="h4">Last response</Heading>
-            <Paragraph>{`${lastMessage?.data}`}</Paragraph>
+            <Paragraph>{`${lastJsonMessage?.data}`}</Paragraph>
             <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
             ></Input>
-            <Button onClick={() => sendMessage(message)}>Send</Button>
+            <Button
+                onClick={() =>
+                    sendJsonMessage<SessionMessageType>({
+                        messageType: SessionMessage.WORD,
+                        data: message,
+                    })
+                }
+            >
+                Send
+            </Button>
         </Container>
     );
 };

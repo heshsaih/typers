@@ -6,6 +6,7 @@ import (
 	"typers/internal/database"
 	"typers/internal/handlers"
 	"typers/internal/middlewares"
+	"typers/internal/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -18,6 +19,8 @@ func main() {
 	}
 
 	database.ConnectToDatabase()
+
+	services.InvalidateSessions()
 
 	router := gin.Default()
 	router.Use(middlewares.CORSMiddleware)

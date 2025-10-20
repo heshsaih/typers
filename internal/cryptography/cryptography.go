@@ -1,9 +1,12 @@
 package cryptograpy
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
+	"typers/internal/enums"
 	"typers/internal/model"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -31,7 +34,12 @@ func CreateToken(user *model.User) (string, error) {
 }
 
 func ParseToken(signedToken string) (token *jwt.Token, error1 error) {
-	token, err := jwt.Parse(signedToken, func(token *jwt.Token) (any, error) {
+	splitToken := strings.Split(signedToken, " ")
+	if len(splitToken) < 2 || (len(splitToken) > 0 && splitToken[0] != "Bearer") {
+		return nil, errors.New(string(enums.ERR_INVALID_TOKEN))
+	}
+
+	token, err := jwt.Parse(splitToken[1], func(token *jwt.Token) (any, error) {
 		return []byte(os.Getenv("CRYPTO_SECRET")), nil
 	})
 

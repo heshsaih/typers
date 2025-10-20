@@ -1,9 +1,9 @@
 import { useAxiosClient } from "../api/config";
 import { useNavigate } from "react-router";
 import { AxiosError } from "axios";
-import { Errors, type ErrorsKeys } from "../types/errors";
 import { useMutation } from "@tanstack/react-query";
 import { useAccountStore } from "../stores/use-account-store";
+import { Errors, type ErrorsKeys } from "../types";
 
 type LoginRequest = {
     username: string;

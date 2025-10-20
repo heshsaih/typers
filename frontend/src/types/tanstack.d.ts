@@ -1,5 +1,5 @@
 import "@tanstack/react-query";
-import type { ErrorsValues } from "./errors";
+import "../types"
 
 declare module "@tanstack/react-query" {
     interface Register {

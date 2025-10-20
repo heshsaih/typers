@@ -3,7 +3,6 @@ package middlewares
 import (
 	"log"
 	"net/http"
-	"strings"
 	cryptograpy "typers/internal/cryptography"
 	"typers/internal/enums"
 
@@ -46,13 +45,7 @@ func RetrieveAuthenticationMiddleware(c *gin.Context) {
 		return
 	}
 
-	splitHeader := strings.Split(authHeader, " ")
-	if len(splitHeader) < 2 || (len(splitHeader) > 0 && splitHeader[0] != "Bearer") {
-		c.Next()
-		return
-	}
-
-	token, err := cryptograpy.ParseToken(splitHeader[1])
+	token, err := cryptograpy.ParseToken(authHeader)
 	if err != nil {
 		c.Next()
 		return
