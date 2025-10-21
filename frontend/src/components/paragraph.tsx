@@ -7,5 +7,5 @@ export const Paragraph: FC<ParagraphProps> = ({
     style,
     ...rest
 }) => {
-    return <p className={`text-center my-4 ${className}`} style={style} {...rest}></p>;
+    return <p className={`text-center max-w-full my-4 ${className}`} style={style} {...rest}></p>;
 };

@@ -1,14 +1,14 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strconv"
 	"typers/internal/database"
 	"typers/internal/enums"
 	"typers/internal/services"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -59,7 +59,7 @@ func HandleSession(c *gin.Context) {
 	if session != nil {
 		log.Println("[HandleSession] User is authenticated, user id:", session.UserID)
 	} else {
-		log.Println("[HandleSession] User is anonymous")	
+		log.Println("[HandleSession] User is anonymous")
 	}
 
 	defer func() {
@@ -69,21 +69,5 @@ func HandleSession(c *gin.Context) {
 		}
 	}()
 
-
-	sessionLoop(conn)
-}
-
-func sessionLoop(conn *websocket.Conn) {
-	for {
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			return
-		}
-
-		log.Println("[SessionLoop] Retrieved message: ", string(message))
-
-		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			return
-		}
-	}
+	services.SessionLoop(conn)
 }

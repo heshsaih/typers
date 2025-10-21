@@ -27,7 +27,8 @@ export type RoleType = typeof Role;
 
 export const SessionMessage = {
     AUTH: "AUTH",
-    WORD: "WORD"
+    WORD: "WORD",
+    INIT: "INIT",
 } as const;
 export type SessionMessageTypeKeys = keyof typeof SessionMessage;
 export type SessionMessageTypeValues =
@@ -39,3 +40,5 @@ export type SessionMessageType = {
     messageType: SessionMessageTypeValues;
     data: any;
 };
+
+export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED";

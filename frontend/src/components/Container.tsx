@@ -1,6 +1,6 @@
 import type { FC, HTMLAttributes, PropsWithChildren } from "react";
 
-type ContainerProps = HTMLAttributes<HTMLDivElement> & PropsWithChildren;
+type ContainerProps = HTMLAttributes<HTMLDivElement> & PropsWithChildren & {};
 
 export const Container: FC<ContainerProps> = ({
     children,
