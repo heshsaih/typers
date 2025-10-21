@@ -1,37 +1,40 @@
-import type { FC, TextareaHTMLAttributes } from "react";
-import { Paragraph } from "./paragraph";
-import type { LetterStatus } from "../types";
+import { type FC, type TextareaHTMLAttributes } from "react";
+import type { Letter, LetterStatus } from "../hooks/use-words";
+import { Cursor } from "./cursor";
 
 type TextFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
-    words?: Array<Array<{ letter: string; status: LetterStatus }>>;
+    words?: Array<Array<Letter>>;
+    wordIdx: number;
+    letterIdx: number;
+};
+
+const colors: Record<LetterStatus, string> = {
+    "NOT-TYPED": "text-text-disabled",
+    CORRECT: "text-text",
+    INCORRECT: "text-error",
 };
 
 export const TextField: FC<TextFieldProps> = ({
     words,
-    className,
-    style,
-    ...rest
+    wordIdx,
+    letterIdx,
 }) => {
+    console.log(wordIdx, letterIdx);
     return (
-        <p className="text-3xl text-center w-full whitespace-normal break-words">
-            {words?.map((word) => (
-                <span>
-                    {word.map((letter) => {
-                        const color = (() => {
-                            switch (letter.status) {
-                                case "NOT-TYPED":
-                                    return "text-text-disabled";
-                                case "CORRECT":
-                                    return "text-text";
-                                case "INCORRECT":
-                                    return "text-error";
-                            }
-                        })();
-                        return <span className={color}>{letter.letter}</span>;
-                    })}
+        <div className="relative text-3xl w-full text-center">
+            {words?.map((word, wIdx) => (
+                <div className="inline">
+                    {word.map((letter, lIdx) => (
+                        <>
+                            {wIdx === wordIdx && lIdx === letterIdx && <Cursor></Cursor>}
+                            <span className={`${colors[letter.status]}`}>
+                                {letter.letter}
+                            </span>
+                        </>
+                    ))}
                     <span> </span>
-                </span>
+                </div>
             ))}
-        </p>
+        </div>
     );
 };
