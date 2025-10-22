@@ -8,6 +8,6 @@ export const App: FC = () => {
     const client = useTanstackQueryClient();
 
     return <QueryClientProvider client={client}>
-        <RouterProvider router={router}></RouterProvider>;
+        <RouterProvider router={router}></RouterProvider>
     </QueryClientProvider>
 };

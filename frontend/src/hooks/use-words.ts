@@ -40,12 +40,16 @@ export const useWords = () => {
         console.log("Message: ", lastJsonMessage);
         if (lastJsonMessage?.messageType === SessionMessage.INIT) {
             setWordsArray(
-                (lastJsonMessage.data as string[]).map((word) =>
-                    word.split("").map((letter) => ({
+                (lastJsonMessage.data as string[]).map((word) => [
+                    ...word.split("").map<Letter>((letter) => ({
                         letter: letter,
                         status: "NOT-TYPED",
                     })),
-                ),
+                    {
+                        letter: " ",
+                        status: "NOT-TYPED",
+                    },
+                ]),
             );
         }
     }, [lastJsonMessage]);

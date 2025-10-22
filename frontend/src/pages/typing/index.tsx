@@ -9,7 +9,7 @@ export const TypingPage: FC = () => {
     const { wordIdx, letterIdx } = useTypingLogic(wordsArray, setWordsArray);
 
     return (
-        <Container className="w-full">
+        <Container className="">
             <TextField wordIdx={wordIdx} letterIdx={letterIdx} words={wordsArray}></TextField>
         </Container>
     );

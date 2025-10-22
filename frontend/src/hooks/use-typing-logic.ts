@@ -22,6 +22,10 @@ export const useTypingLogic = (
         console.log(previousKey);
 
         if (previousKey.key === " ") {
+            if (!wordsArray[wordIdx].find(letter => letter.status !== "NOT-TYPED")) {
+                return;
+            }
+
             const newWordIdx =
                 wordIdx + 1 < wordsArray.length ? wordIdx + 1 : wordsArray.length - 1;
             setWordIdx(newWordIdx);
@@ -30,15 +34,41 @@ export const useTypingLogic = (
         }
 
         if (previousKey.key === "Backspace") {
-            const newWordIdx = wordIdx - 1 >= 0 ? wordIdx - 1 : 0;
-            if (letterIdx === 0) {
-                setWordIdx(newWordIdx);
+            let lIdx = letterIdx - 1;
+            let wIdx = wordIdx;
+
+            if (previousKey.isWithCtrl) {
+                lIdx = 0;
+                if (letterIdx === 0) {
+                    wIdx = wordIdx - 1 >= 0 ? wordIdx - 1 : 0;
+                }
+            } else {
+                if (lIdx < 0) {
+                    if (wIdx === 0) {
+                        lIdx = 0;
+                    } else {
+                        wIdx = wordIdx - 1 === 0 ? wordIdx - 1 : 0;
+                        lIdx = wordsArray[wIdx].length - 1;
+                    }
+                }
             }
-            const newLetterIDx =
-                letterIdx - 1 >= 0 ? letterIdx - 1 : wordsArray[wordIdx - 1].length - 1;
-            setLetterIdx(newLetterIDx);
+
             const a = [...wordsArray];
-            a[newWordIdx][newLetterIDx].status = "NOT-TYPED";
+            if (previousKey.isWithCtrl) {
+                const word = a[wIdx].map<Letter>((letter) => ({
+                    letter: letter.letter,
+                    status: "NOT-TYPED",
+                }));
+                a[wIdx] = word;
+            } else {
+                const letter = a[wIdx][lIdx];
+                a[wIdx][lIdx] = {
+                    letter: letter.letter,
+                    status: "NOT-TYPED",
+                };
+            }
+            setWordIdx(wIdx);
+            setLetterIdx(lIdx);
             setWordsArray(a);
             return;
         }
@@ -70,12 +100,14 @@ export const useTypingLogic = (
                 return;
             }
 
-            e.preventDefault();
-
-            setPreviousKey({
-                key: e.key,
-                isWithCtrl: e.ctrlKey,
-            });
+            if (e.ctrlKey && e.key !== "Backspace") {
+                setPreviousKey(undefined);
+            } else {
+                setPreviousKey({
+                    key: e.key,
+                    isWithCtrl: e.ctrlKey,
+                });
+            }
         };
 
         document.addEventListener("keydown", foo);
