@@ -15,29 +15,25 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
     useEffect(() => {
         setMappedWords(
             words
-                ? words.map((word) => [
-                    ...word.split("").map<Letter>((letter) => ({
+                ? words.map((word) =>
+                    word.split("").map<Letter>((letter) => ({
                         letter: letter,
                         status: "NOT-TYPED",
                     })),
-                    {
-                        letter: " ",
-                        status: "SPACE",
-                    },
-                ])
+                )
                 : [],
-        )
-    }, [words])
+        );
+    }, [words]);
 
     const handleKeyPress = () => {
         if (!previousKey || !mappedWords) {
             return;
         }
 
-        console.log(previousKey);
-
         if (previousKey.key === " ") {
-            if (!mappedWords[wordIdx].find((letter) => letter.status !== "NOT-TYPED")) {
+            if (
+                !mappedWords[wordIdx].find((letter) => letter.status !== "NOT-TYPED")
+            ) {
                 return;
             }
 
@@ -48,7 +44,9 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
             return;
         }
 
+
         if (previousKey.key === "Backspace") {
+            if (wordIdx === 0 && letterIdx === 0) return;
             let lIdx = letterIdx - 1;
             let wIdx = wordIdx;
 
@@ -59,11 +57,17 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
                 }
             } else {
                 if (lIdx < 0) {
-                    if (wIdx === 0) {
-                        lIdx = 0;
+                    wIdx = wordIdx - 1 >= 0 ? wordIdx - 1 : 0;
+                    const word = mappedWords[wIdx];
+                    if (word[word.length - 1].status === "NOT-TYPED") {
+                        for (let i = word.length - 1; i >= 0; i--) {
+                            if (word[i].status !== "NOT-TYPED") {
+                                lIdx = i + 1;
+                                break;
+                            }
+                        }
                     } else {
-                        wIdx = wordIdx - 1 === 0 ? wordIdx - 1 : 0;
-                        lIdx = mappedWords[wIdx].length - 1;
+                        lIdx = word.length;
                     }
                 }
             }
@@ -75,7 +79,7 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
                     status: "NOT-TYPED",
                 }));
                 a[wIdx] = word;
-            } else {
+            } else if (lIdx !== a[wIdx].length) {
                 const letter = a[wIdx][lIdx];
                 a[wIdx][lIdx] = {
                     letter: letter.letter,
@@ -84,8 +88,11 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
             }
             setWordIdx(wIdx);
             setLetterIdx(lIdx);
+            setMappedWords(a);
             return;
         }
+
+        if (mappedWords[wordIdx].length === letterIdx) return;
 
         const currentWord = mappedWords[wordIdx];
 
@@ -96,7 +103,7 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
                 : "INCORRECT";
 
         if (letterIdx + 1 > currentWord.length - 1) {
-            setLetterIdx(currentWord.length - 1);
+            setLetterIdx(currentWord.length);
             return;
         }
 

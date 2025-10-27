@@ -7,7 +7,7 @@ import {
     USER_UNAUTHENTICATED,
 } from "../types";
 
-export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED" | "SPACE";
+export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED";
 export type Letter = {
     letter: string;
     status: LetterStatus;

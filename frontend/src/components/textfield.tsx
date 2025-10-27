@@ -19,7 +19,6 @@ export const TextField: FC<TextFieldProps> = ({
     wordIdx,
     letterIdx,
 }) => {
-    console.log(wordIdx, letterIdx);
     return (
         <div className="relative text-3xl w-full text-center">
             {words?.map((word, wIdx) => (
@@ -32,6 +31,7 @@ export const TextField: FC<TextFieldProps> = ({
                             </span>
                         </>
                     ))}
+                    {wIdx === wordIdx && letterIdx === word.length && <Cursor></Cursor>}
                     <span> </span>
                 </div>
             ))}
