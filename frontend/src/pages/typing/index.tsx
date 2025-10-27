@@ -5,12 +5,12 @@ import { useWords } from "../../hooks/use-words";
 import { useTypingLogic } from "../../hooks/use-typing-logic";
 
 export const TypingPage: FC = () => {
-    const { wordsArray, setWordsArray } = useWords();
-    const { wordIdx, letterIdx } = useTypingLogic(wordsArray, setWordsArray);
+    const { words } = useWords();
+    const { mappedWords, wordIdx, letterIdx } = useTypingLogic(words);
 
     return (
         <Container className="">
-            <TextField wordIdx={wordIdx} letterIdx={letterIdx} words={wordsArray}></TextField>
+            <TextField wordIdx={wordIdx} letterIdx={letterIdx} words={mappedWords}></TextField>
         </Container>
     );
 };

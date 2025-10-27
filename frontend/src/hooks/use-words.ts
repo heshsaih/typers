@@ -7,7 +7,7 @@ import {
     USER_UNAUTHENTICATED,
 } from "../types";
 
-export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED";
+export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED" | "SPACE";
 export type Letter = {
     letter: string;
     status: LetterStatus;
@@ -16,14 +16,14 @@ export type Letter = {
 export const useWords = () => {
     const { sendJsonMessage, lastJsonMessage, readyState } =
         useWebSocket<SessionMessageType | null>(
-            "wss://localhost:42069/api/v1/typing",
+            "wss://localhost:42069/api/v1/session",
             {
                 shouldReconnect: () => false,
             },
         );
     const { token } = useAccountStore();
     const [authenticated, setAuthenticated] = useState<boolean>(false);
-    const [wordsArray, setWordsArray] = useState<Array<Array<Letter>>>();
+    const [words, setWords] = useState<Array<string>>();
 
     useEffect(() => {
         console.log("WS State: ", readyState);
@@ -39,20 +39,9 @@ export const useWords = () => {
     useEffect(() => {
         console.log("Message: ", lastJsonMessage);
         if (lastJsonMessage?.messageType === SessionMessage.INIT) {
-            setWordsArray(
-                (lastJsonMessage.data as string[]).map((word) => [
-                    ...word.split("").map<Letter>((letter) => ({
-                        letter: letter,
-                        status: "NOT-TYPED",
-                    })),
-                    {
-                        letter: " ",
-                        status: "NOT-TYPED",
-                    },
-                ]),
-            );
+            setWords(lastJsonMessage.data);
         }
     }, [lastJsonMessage]);
 
-    return { wordsArray, setWordsArray };
+    return { words };
 };

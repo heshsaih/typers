@@ -6,28 +6,43 @@ type PressedKey = {
     isWithCtrl: boolean;
 };
 
-export const useTypingLogic = (
-    wordsArray: Array<Array<Letter>> | undefined,
-    setWordsArray: (newWordsArray: Array<Array<Letter>>) => void,
-) => {
+export const useTypingLogic = (words: Array<string> | undefined) => {
     const [wordIdx, setWordIdx] = useState<number>(0);
     const [letterIdx, setLetterIdx] = useState<number>(0);
     const [previousKey, setPreviousKey] = useState<PressedKey>();
+    const [mappedWords, setMappedWords] = useState<Array<Array<Letter>>>();
+
+    useEffect(() => {
+        setMappedWords(
+            words
+                ? words.map((word) => [
+                    ...word.split("").map<Letter>((letter) => ({
+                        letter: letter,
+                        status: "NOT-TYPED",
+                    })),
+                    {
+                        letter: " ",
+                        status: "SPACE",
+                    },
+                ])
+                : [],
+        )
+    }, [words])
 
     const handleKeyPress = () => {
-        if (!previousKey || !wordsArray) {
+        if (!previousKey || !mappedWords) {
             return;
         }
 
         console.log(previousKey);
 
         if (previousKey.key === " ") {
-            if (!wordsArray[wordIdx].find(letter => letter.status !== "NOT-TYPED")) {
+            if (!mappedWords[wordIdx].find((letter) => letter.status !== "NOT-TYPED")) {
                 return;
             }
 
             const newWordIdx =
-                wordIdx + 1 < wordsArray.length ? wordIdx + 1 : wordsArray.length - 1;
+                wordIdx + 1 < mappedWords.length ? wordIdx + 1 : mappedWords.length - 1;
             setWordIdx(newWordIdx);
             setLetterIdx(0);
             return;
@@ -48,12 +63,12 @@ export const useTypingLogic = (
                         lIdx = 0;
                     } else {
                         wIdx = wordIdx - 1 === 0 ? wordIdx - 1 : 0;
-                        lIdx = wordsArray[wIdx].length - 1;
+                        lIdx = mappedWords[wIdx].length - 1;
                     }
                 }
             }
 
-            const a = [...wordsArray];
+            const a = [...mappedWords];
             if (previousKey.isWithCtrl) {
                 const word = a[wIdx].map<Letter>((letter) => ({
                     letter: letter.letter,
@@ -69,18 +84,16 @@ export const useTypingLogic = (
             }
             setWordIdx(wIdx);
             setLetterIdx(lIdx);
-            setWordsArray(a);
             return;
         }
 
-        const currentWord = wordsArray[wordIdx];
+        const currentWord = mappedWords[wordIdx];
 
-        const a = [...wordsArray];
+        const a = [...mappedWords];
         a[wordIdx][letterIdx].status =
             previousKey.key === currentWord[letterIdx].letter
                 ? "CORRECT"
                 : "INCORRECT";
-        setWordsArray(a);
 
         if (letterIdx + 1 > currentWord.length - 1) {
             setLetterIdx(currentWord.length - 1);
@@ -117,5 +130,5 @@ export const useTypingLogic = (
 
     useEffect(() => handleKeyPress(), [previousKey]);
 
-    return { wordIdx, letterIdx };
+    return { mappedWords, wordIdx, letterIdx };
 };
