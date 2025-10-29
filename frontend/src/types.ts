@@ -25,20 +25,4 @@ export const Role = {
 
 export type RoleType = typeof Role;
 
-export const SessionMessage = {
-    AUTH: "AUTH",
-    WORD: "WORD",
-    INIT: "INIT",
-} as const;
-export type SessionMessageTypeKeys = keyof typeof SessionMessage;
-export type SessionMessageTypeValues =
-    (typeof SessionMessage)[SessionMessageTypeKeys];
-
-export const USER_UNAUTHENTICATED = "UNAUTHENTICATED" as const;
-
-export type SessionMessageType = {
-    messageType: SessionMessageTypeValues;
-    data: any;
-};
-
 export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED";

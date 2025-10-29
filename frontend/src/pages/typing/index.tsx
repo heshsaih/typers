@@ -1,12 +1,10 @@
 import type { FC } from "react";
 import { Container } from "../../components/container";
 import { TextField } from "../../components/textfield";
-import { useWords } from "../../hooks/use-words";
 import { useTypingLogic } from "../../hooks/use-typing-logic";
 
 export const TypingPage: FC = () => {
-    const { words } = useWords();
-    const { mappedWords, wordIdx, letterIdx } = useTypingLogic(words);
+    const { mappedWords, wordIdx, letterIdx } = useTypingLogic();
 
     return (
         <Container className="">

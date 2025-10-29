@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { useAccountStore } from "../stores/use-account-store";
-import {
-  type SessionMessageType,
-  SessionMessage,
-  USER_UNAUTHENTICATED,
-} from "../types";
+
+export const SessionMessage = {
+    AUTH: "AUTH",
+    WORD: "WORD",
+    INIT: "INIT",
+} as const;
+export type SessionMessageTypeKeys = keyof typeof SessionMessage;
+export type SessionMessageTypeValues =
+    (typeof SessionMessage)[SessionMessageTypeKeys];
+
+export const USER_UNAUTHENTICATED = "UNAUTHENTICATED" as const;
+
+export type SessionMessageType = {
+    messageType: SessionMessageTypeValues;
+    data: any;
+};
 
 export const useSession = () => {
   const { sendJsonMessage, lastJsonMessage, readyState } =

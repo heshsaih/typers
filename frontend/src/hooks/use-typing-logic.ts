@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
-import type { Letter } from "./use-words";
+import { useSession } from "./use-session";
 
 type PressedKey = {
     key: string;
     isWithCtrl: boolean;
 };
 
-export const useTypingLogic = (words: Array<string> | undefined) => {
+export type LetterStatus = "CORRECT" | "INCORRECT" | "NOT-TYPED";
+export type Letter = {
+    letter: string;
+    status: LetterStatus;
+};
+
+export const useTypingLogic = () => {
+    const { words } = useSession();
+    const [mappedWords, setMappedWords] = useState<Array<Array<Letter>>>();
     const [wordIdx, setWordIdx] = useState<number>(0);
     const [letterIdx, setLetterIdx] = useState<number>(0);
     const [previousKey, setPreviousKey] = useState<PressedKey>();
-    const [mappedWords, setMappedWords] = useState<Array<Array<Letter>>>();
 
     useEffect(() => {
         setMappedWords(
@@ -43,7 +50,6 @@ export const useTypingLogic = (words: Array<string> | undefined) => {
             setLetterIdx(0);
             return;
         }
-
 
         if (previousKey.key === "Backspace") {
             if (wordIdx === 0 && letterIdx === 0) return;

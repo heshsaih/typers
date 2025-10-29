@@ -1,6 +1,6 @@
 import { type FC, type TextareaHTMLAttributes } from "react";
-import type { Letter, LetterStatus } from "../hooks/use-words";
 import { Cursor } from "./cursor";
+import type { Letter, LetterStatus } from "../hooks/use-typing-logic";
 
 type TextFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
     words?: Array<Array<Letter>>;
@@ -23,6 +23,7 @@ export const TextField: FC<TextFieldProps> = ({
         <div className="relative text-3xl w-full text-center">
             {words?.map((word, wIdx) => (
                 <div className="inline">
+                    <span> </span>
                     {word.map((letter, lIdx) => (
                         <>
                             {wIdx === wordIdx && lIdx === letterIdx && <Cursor></Cursor>}
@@ -32,7 +33,6 @@ export const TextField: FC<TextFieldProps> = ({
                         </>
                     ))}
                     {wIdx === wordIdx && letterIdx === word.length && <Cursor></Cursor>}
-                    <span> </span>
                 </div>
             ))}
         </div>
