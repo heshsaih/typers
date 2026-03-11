@@ -21,7 +21,7 @@ export type SessionMessageType = {
 export const useSession = () => {
   const { sendJsonMessage, lastJsonMessage, readyState } =
     useWebSocket<SessionMessageType | null>(
-      "wss://localhost:42069/api/v1/session",
+      "wss://localhost:42069/api/v1/typing",
       {
         shouldReconnect: () => false,
       },

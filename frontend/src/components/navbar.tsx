@@ -12,46 +12,46 @@ export const Navbar: FC = () => {
     const navigate = useNavigate();
     const { parsedToken, setToken } = useAccountStore();
 
+    console.log(isMobile);
+
     return (
-        <div className="w-full static top-0 left-0 mb-5 p-1 flex justify-between px-6 pb-2 border-b border-accent-secondary">
-            <div className="flex justify-center w-fit">
-                <LinkButton to="/" changeOnHover={false}>
-                    <Heading style={{ margin: 0 }} type="h4">
-                        Typers
-                    </Heading>
-                </LinkButton>
-            </div>
-            {!isMobile && (
-                <div className="w-full flex justify-between display-none">
-                    <div className="flex">
-                        <LinkButton to="/typing" border="left">
-                            Typing
+        <div className="w-full static left-0 flex justify-between mt-5">
+            <div className="flex">
+                <Heading className="!m-0" type="h4">
+                    # typers
+                </Heading>
+                {!isMobile && (
+                    <div className="flex ml-5">
+                        <LinkButton border="left" to="/typing">
+                            typing
                         </LinkButton>
-                        <LinkButton to="/games" border="both">
-                            Games
+                        <LinkButton border="both" to="/games">
+                            games
                         </LinkButton>
                     </div>
-                    {parsedToken ? (
-                        <Dropdown label={parsedToken.sub}>
-                            <DropdownButton onClick={() => navigate("/profile")}>
-                                My profile
-                            </DropdownButton>
-                            <DropdownButton
-                                onClick={() => {
-                                    setToken(null);
-                                    navigate("/")
-                                }}
-                            >
-                                Logout
-                            </DropdownButton>
-                        </Dropdown>
-                    ) : (
-                        <LinkButton to="/login" border="both">
-                            Log in
-                        </LinkButton>
-                    )}
-                </div>
-            )}
+                )}
+            </div>
+            <div>
+                {parsedToken ? (
+                    <Dropdown label={parsedToken.sub}>
+                        <DropdownButton onClick={() => navigate("/profile")}>
+                            My profile
+                        </DropdownButton>
+                        <DropdownButton
+                            onClick={() => {
+                                setToken(null);
+                                navigate("/");
+                            }}
+                        >
+                            Logout
+                        </DropdownButton>
+                    </Dropdown>
+                ) : (
+                    <LinkButton to="/login" border="both">
+                        Log in
+                    </LinkButton>
+                )}
+            </div>
         </div>
     );
 };

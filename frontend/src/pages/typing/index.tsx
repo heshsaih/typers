@@ -7,7 +7,7 @@ export const TypingPage: FC = () => {
     const { mappedWords, wordIdx, letterIdx } = useTypingLogic();
 
     return (
-        <Container className="">
+        <Container className="mt-24">
             <TextField wordIdx={wordIdx} letterIdx={letterIdx} words={mappedWords}></TextField>
         </Container>
     );

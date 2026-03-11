@@ -13,7 +13,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({
 }) => {
     return (
         <li
-            className={`rounded-xs hover:bg-background-secondary ${className}`}
+            className={`rounded-xs hover:bg-accent-secondary ${className}`}
             style={style}
             {...rest}
         >

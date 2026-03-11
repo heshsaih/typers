@@ -62,7 +62,7 @@ export const Dropdown: FC<DropdownProps> = ({
     });
 
     return (
-        <div className={`${className ?? ""}`} style={style} {...rest}>
+        <div className={`h-full ${className ?? ""}`} style={style} {...rest}>
             <TransparentButton
                 className="h-full"
                 ref={buttonRef}

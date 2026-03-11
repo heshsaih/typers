@@ -8,7 +8,7 @@ import {
 type HeadingType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
-    type: HeadingType;
+    type?: HeadingType;
 };
 
 const defaultHeadingStyles: Record<HeadingType, CSSProperties> = {
@@ -57,11 +57,11 @@ export const Heading: FC<HeadingProps> = ({
     ...rest
 }) => {
     const headingType: HeadingType = Object.keys(defaultHeadingStyles).includes(
-        type,
+        type!,
     )
-        ? type
+        ? (type as HeadingType)
         : "h1";
-    const styles = defaultHeadingStyles[type];
+    const styles = defaultHeadingStyles[headingType];
 
     return createElement(headingType, {
         className: `${className}`,

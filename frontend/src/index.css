@@ -1,14 +1,14 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @theme {
-  --color-background-primary: #37353e;
-  --color-background-secondary: #44444e;
-  --color-accent-primary: #715a5a;
-  --color-accent-secondary: #4a3a3a;
-  --color-focus: #ffffff;
-  --color-text: #d3dad9;
+  --color-background-primary: #222024;
+  --color-background-secondary: #353138;
+  --color-accent-primary: #d47024;
+  --color-accent-secondary: #703b13;
+  --color-text: #c7c7c7;
   --color-error: #e02b2b;
   --color-text-disabled: #696969;
+  --color-border: #9e9d9d;
 }
 
 body,
