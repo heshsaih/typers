@@ -11,6 +11,10 @@ import (
 	"typers/internal/services"
 )
 
+const (
+	WORDS_PROVIDER_UNAVAILABLE = "WORDS_PROVIDER_UNAVAILABLE"
+)
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -30,7 +34,7 @@ func HandleGetWords(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "",
+			"error": WORDS_PROVIDER_UNAVAILABLE,
 		})
 		return
 	}
