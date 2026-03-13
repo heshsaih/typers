@@ -15,7 +15,7 @@ export const Input: FC<InputProps> = ({
     error,
     ...rest
 }) => {
-    const border = error ? "border-error" : "border-accent-primary";
+    const border = error ? "border-error" : "border-text-text";
 
     return (
         <div className={`m-1 flex flex-col ${fullWidth ? "w-full" : ""}`}>

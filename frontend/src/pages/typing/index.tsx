@@ -45,9 +45,7 @@ export const TypingPage: FC = () => {
                         setConfig={setConfig}
                     ></ConfigurationBar>
                     <TextContainer words={words}></TextContainer>
-                    <Button onClick={() => getWords(params)} tabIndex={10}>
-                        Restart
-                    </Button>
+                    <Button onClick={() => getWords(params)}>Restart</Button>
                 </>
             ) : (
                 <Spinner></Spinner>

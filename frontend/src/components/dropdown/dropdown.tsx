@@ -74,7 +74,7 @@ export const Dropdown: FC<DropdownProps> = ({
             {open && (
                 <div
                     ref={listRef}
-                    className="fixed bg-background-primary border border-accent-primary mt-1 py-3 px-1 rounded-sm"
+                    className="fixed bg-background-primary border border-text-text mt-1 py-3 px-1 rounded-sm"
                 >
                     <ul>{childrenWithProps}</ul>
                 </div>

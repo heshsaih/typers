@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { Cursor } from "../../components/cursor";
 
 type TextContainerProps = {
@@ -218,31 +218,48 @@ export const TextContainer: FC<TextContainerProps> = ({ words }) => {
         }));
     });
 
+    const ref = useRef<HTMLButtonElement>(null);
+    const [hasFocus, setHasFocus] = useState<boolean>(false);
+
     useEffect(() => {
         const handleClick = (e: KeyboardEvent) => {
-            const result = handleKeyboardClick(e, mappedWords, cursorPos);
-            setMappedWords(result.words);
-            setCursorPos(result.newCursorPos);
+            if (hasFocus) {
+                const result = handleKeyboardClick(e, mappedWords, cursorPos);
+                setMappedWords(result.words);
+                setCursorPos(result.newCursorPos);
+            }
         };
 
         document.addEventListener("keydown", handleClick);
         return () => {
             document.removeEventListener("keydown", handleClick);
         };
-    }, [cursorPos]);
+    }, [cursorPos, hasFocus]);
 
     return (
-        <div className="relative text-3xl w-11/12 text-center overflow-visible mb-5">
-            <button autoFocus className="invisible"></button>
+        <div
+            onClick={() => ref.current?.focus()}
+            className="relative text-3xl w-11/12 text-center overflow-visible mb-5"
+        >
+            <button
+                ref={ref}
+                autoFocus
+                id="text-container"
+                className="focus:outline-none"
+                onFocus={() => setHasFocus(true)}
+                onBlur={() => setHasFocus(false)}
+            ></button>
             {mappedWords.map((w, wi) => (
                 <span className="inline-block">
                     <span className="whitespace-pre"> </span>
-                    {cursorPos.w === wi && cursorPos.l === 0 && <Cursor></Cursor>}
+                    {cursorPos.w === wi && cursorPos.l === 0 && hasFocus && (
+                        <Cursor></Cursor>
+                    )}
                     <span className={getWordColor(w.status)}>
                         {w.letters.map((l, li) => (
                             <>
                                 <span className={getLetterColor(l.status)}>{l.letter}</span>
-                                {cursorPos.w === wi && cursorPos.l - 1 === li && (
+                                {cursorPos.w === wi && cursorPos.l - 1 === li && hasFocus && (
                                     <Cursor></Cursor>
                                 )}
                             </>
