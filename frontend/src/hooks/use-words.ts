@@ -14,6 +14,7 @@ export const useWords = () => {
     const [words, setWords] = useState<string[] | null>(null);
 
     const getWords = async (params: GetWordsParams) => {
+        setWords(null);
         const response = await client.get<GetWordsResponse>("/typing/words", {
             params: params,
         });

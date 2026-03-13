@@ -31,7 +31,7 @@ export const Navbar: FC = () => {
                     </div>
                 )}
             </div>
-            <div>
+            <div className="h-full">
                 {parsedToken ? (
                     <Dropdown label={parsedToken.sub}>
                         <DropdownButton onClick={() => navigate("/profile")}>

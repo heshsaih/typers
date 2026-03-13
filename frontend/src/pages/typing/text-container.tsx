@@ -232,7 +232,8 @@ export const TextContainer: FC<TextContainerProps> = ({ words }) => {
     }, [cursorPos]);
 
     return (
-        <div className="relative text-3xl w-11/12 text-center overflow-visible">
+        <div className="relative text-3xl w-11/12 text-center overflow-visible mb-5">
+            <button autoFocus className="invisible"></button>
             {mappedWords.map((w, wi) => (
                 <span className="inline-block">
                     <span className="whitespace-pre"> </span>
