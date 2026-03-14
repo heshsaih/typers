@@ -7,6 +7,7 @@ import { ConfigurationBar, type ConfigParams } from "./configuration-bar";
 import { TimeCounter } from "./time-counter";
 import { WordCounter } from "./word-counter";
 import { Button } from "../../components/button";
+import { useTypingLogic } from "../../hooks/use-typing-logic";
 
 export const TypingPage: FC = () => {
     const { getWords, words } = useWords();
@@ -14,6 +15,9 @@ export const TypingPage: FC = () => {
         gameType: "time",
         amount: 30,
     });
+
+    const { mappedWords, handleKeyboardClick, cursorPos } = useTypingLogic(words);
+
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
     const [params, setParams] = useState<GetWordsParams>({
@@ -30,6 +34,7 @@ export const TypingPage: FC = () => {
                 <>
                     {config.gameType === "words" ? (
                         <WordCounter
+                            isPlaying={isPlaying}
                             initialAmount={config.amount}
                             currentWord={0}
                         ></WordCounter>
@@ -44,7 +49,11 @@ export const TypingPage: FC = () => {
                         config={config}
                         setConfig={setConfig}
                     ></ConfigurationBar>
-                    <TextContainer words={words}></TextContainer>
+                    <TextContainer
+                        mappedWords={mappedWords}
+                        cursorPos={cursorPos}
+                        handleKeyboardClick={handleKeyboardClick}
+                    ></TextContainer>
                     <Button onClick={() => getWords(params)}>Restart</Button>
                 </>
             ) : (

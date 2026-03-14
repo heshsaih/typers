@@ -32,7 +32,7 @@ export const TimeCounter: FC<TimeCounterProps> = ({
     return (
         <div>
             <Heading className="text-text-disabled" type="h1">
-                {Math.ceil(initialTime - elapsed)}
+                {Math.ceil(initialTime - elapsed)} {!isPlaying && "seconds"}
             </Heading>
         </div>
     );
