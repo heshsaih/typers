@@ -12,8 +12,6 @@ export const Navbar: FC = () => {
     const navigate = useNavigate();
     const { parsedToken, setToken } = useAccountStore();
 
-    console.log(isMobile);
-
     return (
         <div className="w-full static left-0 flex justify-between mt-5 mb-10">
             <div className="flex">

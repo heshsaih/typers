@@ -11,16 +11,22 @@ type TextContainerProps = {
     mappedWords: Word[];
     cursorPos: CursorPosition;
     handleKeyboardClick: (e: KeyboardEvent) => void;
+    startLoop: () => void;
 };
 
 export const TextContainer: FC<TextContainerProps> = ({
     mappedWords,
     cursorPos,
     handleKeyboardClick,
+    startLoop
 }) => {
     const ref = useRef<HTMLButtonElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
     const cursorRef = useRef<HTMLSpanElement>(null);
+
+    if (cursorPos.w !== 0 || cursorPos.l !== 0) {
+        startLoop();
+    }
 
     useEffect(() => {
         const handleClick = (e: KeyboardEvent) => {

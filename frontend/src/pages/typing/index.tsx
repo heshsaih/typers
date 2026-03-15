@@ -20,9 +20,20 @@ export const TypingPage: FC = () => {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
+    const startLoop = () => {
+        setIsPlaying(true);
+    };
+
+    const finish = () => {
+        setIsPlaying(false);
+    };
+
     useEffect(() => {
         getWords({
-            amount: config.gameType === "words" ? config.amount : 400 * (config.amount / 60),
+            amount:
+                config.gameType === "words"
+                    ? config.amount
+                    : 400 * (config.amount / 60),
         });
     }, [config]);
 
@@ -32,12 +43,14 @@ export const TypingPage: FC = () => {
                 <>
                     {config.gameType === "words" ? (
                         <WordCounter
+                            finishLoop={finish}
                             isPlaying={isPlaying}
                             initialAmount={config.amount}
-                            currentWord={0}
+                            currentWord={cursorPos.w}
                         ></WordCounter>
                     ) : (
                         <TimeCounter
+                            finishLoop={finish}
                             initialTime={config.amount}
                             isPlaying={isPlaying}
                         ></TimeCounter>
@@ -48,11 +61,24 @@ export const TypingPage: FC = () => {
                         setConfig={setConfig}
                     ></ConfigurationBar>
                     <TextContainer
+                        startLoop={startLoop}
                         mappedWords={mappedWords}
                         cursorPos={cursorPos}
                         handleKeyboardClick={handleKeyboardClick}
                     ></TextContainer>
-                    <Button onClick={() => getWords(params)}>Restart</Button>
+                    <Button
+                        onClick={() => {
+                            getWords({
+                                amount:
+                                    config.gameType === "words"
+                                        ? config.amount
+                                        : 400 * (config.amount / 60),
+                            });
+                            setIsPlaying(false);
+                        }}
+                    >
+                        Restart
+                    </Button>
                 </>
             ) : (
                 <Spinner></Spinner>
