@@ -20,6 +20,7 @@ export const TextContainer: FC<TextContainerProps> = ({
 }) => {
     const ref = useRef<HTMLButtonElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
+    const cursorRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         const handleClick = (e: KeyboardEvent) => {
@@ -27,6 +28,8 @@ export const TextContainer: FC<TextContainerProps> = ({
                 handleKeyboardClick(e);
             }
         };
+
+        cursorRef.current?.scrollIntoView();
 
         document.addEventListener("keydown", handleClick);
         return () => {
@@ -37,7 +40,7 @@ export const TextContainer: FC<TextContainerProps> = ({
     return (
         <div
             onClick={() => ref.current?.focus()}
-            className="relative text-3xl w-11/12 text-center overflow-visible mb-5"
+            className="relative text-3xl w-11/12 text-center max-h-75 overflow-hidden mb-5"
         >
             <button
                 ref={ref}
@@ -51,14 +54,14 @@ export const TextContainer: FC<TextContainerProps> = ({
                 <span className="inline-block">
                     <span className="whitespace-pre"> </span>
                     {cursorPos.w === wi && cursorPos.l === 0 && hasFocus && (
-                        <Cursor></Cursor>
+                        <Cursor ref={cursorRef}></Cursor>
                     )}
                     <span className={getWordColor(w.status)}>
                         {w.letters.map((l, li) => (
                             <>
                                 <span className={getLetterColor(l.status)}>{l.letter}</span>
                                 {cursorPos.w === wi && cursorPos.l - 1 === li && hasFocus && (
-                                    <Cursor></Cursor>
+                                    <Cursor ref={cursorRef}></Cursor>
                                 )}
                             </>
                         ))}

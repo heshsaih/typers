@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 import { Container } from "../../components/container";
-import { type GetWordsParams, useWords } from "../../hooks/use-words";
+import { useWords } from "../../hooks/use-words";
 import { Spinner } from "../../components/spinner";
 import { TextContainer } from "./text-container";
 import { ConfigurationBar, type ConfigParams } from "./configuration-bar";
@@ -20,13 +20,11 @@ export const TypingPage: FC = () => {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-    const [params, setParams] = useState<GetWordsParams>({
-        amount: 30,
-    });
-
     useEffect(() => {
-        getWords(params);
-    }, []);
+        getWords({
+            amount: config.gameType === "words" ? config.amount : 400 * (config.amount / 60),
+        });
+    }, [config]);
 
     return (
         <Container className="">
