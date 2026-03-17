@@ -1,5 +1,8 @@
-run-app:
-	go build cmd/main/main.go && ./main.exe
+main: compile \
+
+
+compile: cmd/main/main.go
+	go build cmd/main/main.go
 
 migrate-db:
 	go run cmd/migrate/migrate.go
