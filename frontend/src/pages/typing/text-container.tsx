@@ -11,26 +11,33 @@ type TextContainerProps = {
     mappedWords: Word[];
     cursorPos: CursorPosition;
     handleKeyboardClick: (e: KeyboardEvent) => void;
+    isPlaying: boolean;
     startLoop: () => void;
+};
+
+const isAlphanumeric = (e: string) => {
+    if (e.length !== 1) return false;
+    const code = e.charCodeAt(0);
+    return (code > 64 && code < 91) || (code > 96 && code < 123);
 };
 
 export const TextContainer: FC<TextContainerProps> = ({
     mappedWords,
     cursorPos,
     handleKeyboardClick,
-    startLoop
+    startLoop,
+    isPlaying,
 }) => {
     const ref = useRef<HTMLButtonElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
     const cursorRef = useRef<HTMLSpanElement>(null);
 
-    if (cursorPos.w !== 0 || cursorPos.l !== 0) {
-        startLoop();
-    }
-
     useEffect(() => {
         const handleClick = (e: KeyboardEvent) => {
             if (hasFocus) {
+                if (!isPlaying && isAlphanumeric(e.key)) {
+                    startLoop();
+                }
                 handleKeyboardClick(e);
             }
         };
@@ -57,19 +64,21 @@ export const TextContainer: FC<TextContainerProps> = ({
                 onBlur={() => setHasFocus(false)}
             ></button>
             {mappedWords.map((w, wi) => (
-                <span className="inline-block">
+                <span key={wi} className="inline-block">
                     <span className="whitespace-pre"> </span>
                     {cursorPos.w === wi && cursorPos.l === 0 && hasFocus && (
                         <Cursor ref={cursorRef}></Cursor>
                     )}
                     <span className={getWordColor(w.status)}>
                         {w.letters.map((l, li) => (
-                            <>
-                                <span className={getLetterColor(l.status)}>{l.letter}</span>
+                            <span key={li}>
+                                <span className={getLetterColor(l.status)}>
+                                    {l.letter}
+                                </span>
                                 {cursorPos.w === wi && cursorPos.l - 1 === li && hasFocus && (
                                     <Cursor ref={cursorRef}></Cursor>
                                 )}
-                            </>
+                            </span>
                         ))}
                     </span>
                 </span>

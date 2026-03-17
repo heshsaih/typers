@@ -176,6 +176,13 @@ export const useTypingLogic = (words: string[] | null) => {
             return;
         }
 
+        if (
+            mappedWords.length <= newCursorPos.w ||
+            mappedWords[newCursorPos.w].letters.length <= newCursorPos.l
+        ) {
+            return;
+        }
+
         if (mappedWords[newCursorPos.w].letters[newCursorPos.l].letter === e.key) {
             mappedWords[newCursorPos.w].letters[newCursorPos.l].status = "CORRECT";
             if (

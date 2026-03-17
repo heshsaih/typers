@@ -65,6 +65,7 @@ export const ConfigurationBar: FC<ConfigurationBarProps> = ({
                 <div>
                     {timeButtons.map((button, i) => (
                         <TransparentButton
+                            key={i}
                             border={i === timeButtons.length - 1 ? "both" : "left"}
                             onClick={() => setConfig(button)}
                             className={
@@ -86,6 +87,7 @@ export const ConfigurationBar: FC<ConfigurationBarProps> = ({
                 <div>
                     {wordsButtons.map((button, i) => (
                         <TransparentButton
+                            key={i}
                             border={i === wordsButtons.length - 1 ? "both" : "left"}
                             onClick={() => setConfig(button)}
                             className={

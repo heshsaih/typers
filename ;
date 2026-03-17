@@ -14,8 +14,13 @@ export const TypingPage: FC = () => {
         gameType: "time",
         amount: 30,
     });
-    const [startTime, setStartTime] = useState<number>(0);
-    const [currentTime, setCurrentTime] = useState<number>(0);
+    const [timer, setTimer] = useState<number>(config.amount);
+
+    useEffect(() => {
+        if (config.gameType === "time") {
+            setTimer(config.amount);
+        }
+    }, [config]);
 
     const { mappedWords, handleKeyboardClick, cursorPos } = useTypingLogic(words);
 
@@ -24,8 +29,6 @@ export const TypingPage: FC = () => {
 
     const startLoop = () => {
         setIsPlaying(true);
-        setStartTime(new Date().getTime() + config.amount * 1000);
-        setCurrentTime(new Date().getTime());
         setFinished(false);
     };
 
@@ -34,37 +37,23 @@ export const TypingPage: FC = () => {
         setFinished(true);
     };
 
-    useEffect(() => {
-        if (!isPlaying) return;
-        if (config.gameType === "time") {
-            const interval = setInterval(() => {
-                if (isPlaying) {
-                    const newCurrentTime = new Date().getTime();
-
-                    if (startTime - newCurrentTime <= 0) {
-                        finish();
-                    }
-                    setCurrentTime(new Date().getTime());
-                }
-            }, 100);
-
-            return () => clearInterval(interval);
-        }
-        if (
-            config.amount - cursorPos.w === 1 &&
-            cursorPos.l === mappedWords[cursorPos.w].letters.length
-        ) {
-            finish();
-        }
-    }, [isPlaying, config, cursorPos]);
+    useEffect(() => { }, []);
 
     const progress = () => {
-        if (!isPlaying && !finished) {
+        if (!isPlaying) {
             return `${config.amount} ${config.gameType === "words" ? "words" : "seconds"}`;
         } else {
-            return config.gameType === "words"
-                ? config.amount - cursorPos.w - 1
-                : Math.ceil((startTime - currentTime) / 1000);
+            if (config.gameType === "words") {
+                if (config.amount - cursorPos.w < 0) {
+                    finish();
+                }
+                return config.amount - cursorPos.w;
+            } else {
+                if (timer === 0) {
+                    finish();
+                }
+                return timer;
+            }
         }
     };
 
@@ -76,12 +65,6 @@ export const TypingPage: FC = () => {
                     : 400 * (config.amount / 60),
         });
 
-    const handleRestart = () => {
-        setIsPlaying(false);
-        setFinished(false);
-        callGetWords();
-    };
-
     useEffect(() => {
         callGetWords();
     }, [config]);
@@ -92,22 +75,21 @@ export const TypingPage: FC = () => {
                 <>
                     <ProgressCounter>{progress()}</ProgressCounter>
                     <ConfigurationBar
-                        isPlaying={isPlaying || finished}
+                        isPlaying={isPlaying}
                         config={config}
                         setConfig={setConfig}
                     ></ConfigurationBar>
                     {finished ? (
-                        <>wp wp</>
+                        <></>
                     ) : (
                         <TextContainer
                             startLoop={startLoop}
                             mappedWords={mappedWords}
                             cursorPos={cursorPos}
                             handleKeyboardClick={handleKeyboardClick}
-                            isPlaying={isPlaying}
                         ></TextContainer>
                     )}
-                    <Button onClick={handleRestart}>Restart</Button>
+                    <Button onClick={callGetWords}>Restart</Button>
                 </>
             ) : (
                 <Spinner></Spinner>

@@ -8,7 +8,7 @@ export const Cursor: FC<CursorProps> = ({ ref }) => {
     return (
         <span
             ref={ref}
-            className="absolute -translate-x-2 animate-pulse text-text transition-opacity duration-500 ease-out"
+            className="absolute -translate-x-2 animate-pulse text-text transition-opacity duration-500fortnite"
         >
             &#124;
         </span>
