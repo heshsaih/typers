@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type FC } from "react";
+import { useRef, useState, type ChangeEvent, type FC } from "react";
 import { Cursor } from "../../components/cursor";
 import {
     getLetterColor,
@@ -53,8 +53,6 @@ export const TextContainer: FC<TextContainerProps> = ({
                 setText(e.target.value);
             }
         }
-
-        cursorRef.current?.scrollIntoView();
     };
 
     return (

@@ -1,14 +1,9 @@
 package services
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io"
-	"net/http"
+	"bufio"
+	"math/rand"
 	"os"
-	"strings"
-	"typers/internal/enums"
 )
 
 type ApiResponse []struct {
@@ -18,31 +13,29 @@ type ApiResponse []struct {
 	Language string
 }
 
+var words []string = nil
+
+func init() {
+	filepath := "resources/words.txt"
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	words = make([]string, 0, 3000)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+	}
+}
+
 func GetWords(amount int) ([]string, error) {
-	wordApi := os.Getenv("WORD_API")
-	if len(wordApi) == 0 {
-		return nil, errors.New(string(enums.ERR_WORD_API_UNAVAILABLE))
+	result := make([]string, 0, amount)
+	for range amount {
+		i := rand.Intn(len(words) - 1)
+		result = append(result, words[i])
 	}
-
-	resp, err := http.Get(fmt.Sprintf("%s?language=en&words=%d", wordApi, amount))
-	if err != nil {
-		return nil, errors.New(string(enums.ERR_WORD_API_UNAVAILABLE))
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, errors.New(string(enums.ERR_WORD_API_UNAVAILABLE))
-	}
-
-	var parsedApiResponse ApiResponse
-	if err := json.Unmarshal(body, &parsedApiResponse); err != nil {
-		return nil, errors.New(string(enums.ERR_WORD_API_UNAVAILABLE))
-	}
-
-	var response []string
-	for i := range parsedApiResponse {
-		response = append(response, strings.ReplaceAll(parsedApiResponse[i].Word, " ", "-"))
-	}
-
-	return response, nil
+	return result, nil
 }
