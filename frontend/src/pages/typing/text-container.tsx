@@ -25,13 +25,33 @@ export const TextContainer: FC<TextContainerProps> = ({
     const ref = useRef<HTMLInputElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
     const cursorRef = useRef<HTMLSpanElement>(null);
+    const [text, setText] = useState<string>("");
+
+    const validateInput = (text: string): boolean => {
+        const words = text.split(" ");
+        if (words.length > mappedWords.length) {
+            return false;
+        }
+
+        if (
+            words[words.length - 1].length >
+            mappedWords[words.length - 1].letters.length
+        ) {
+            return false;
+        }
+
+        return true;
+    };
 
     const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
         if (hasFocus) {
             if (!isPlaying) {
                 startLoop();
             }
-            handleKeyboardClick(e.target.value);
+            if (validateInput(e.target.value)) {
+                handleKeyboardClick(e.target.value);
+                setText(e.target.value);
+            }
         }
 
         cursorRef.current?.scrollIntoView();
@@ -45,6 +65,7 @@ export const TextContainer: FC<TextContainerProps> = ({
             <input
                 ref={ref}
                 autoFocus
+                value={text}
                 onChange={handleInput}
                 id="text-container"
                 className="absolute opacity-0 pointer-events-none w-0 h-0"

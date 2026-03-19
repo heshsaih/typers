@@ -66,7 +66,6 @@ export const useTypingLogic = (words: string[] | null) => {
 
     const handleKeyboardClick = (inputText: string) => {
         const currentWords = inputText.split(" ");
-        console.log(currentWords);
         setCursorPos({
             w: currentWords.length - 1,
             l: currentWords[currentWords.length - 1].length,
@@ -89,6 +88,13 @@ export const useTypingLogic = (words: string[] | null) => {
             if (currentWords[i] === newMappedWord.letters.join("")) {
                 newMappedWord.status = "CORRECT";
             } else {
+                if (
+                    currentWords[i].length < newMappedWord.letters.length &&
+                    i !== currentWords.length - 1
+                ) {
+                    newMappedWord.status = "INCORRECT";
+                }
+
                 for (let j = 0; j < currentWords[i].length; j++) {
                     const currentLetter = newMappedWord.letters[j];
                     if (currentLetter.letter === currentWords[i][j]) {

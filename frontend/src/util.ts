@@ -31,3 +31,8 @@ export const isTypedCharacterAllowed = (char: string): boolean => {
     //small character, big character or the "-" dash
     return (code > 64 && code < 91) || (code > 96 && code < 123) || code === 45;
 };
+
+// clamps a given number to a given range [min, max]
+export const clamp = (number: number, min: number, max: number): number => {
+    return Math.max(min, Math.min(number, max));
+};
