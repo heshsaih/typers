@@ -1,4 +1,10 @@
-import { useRef, useState, type ChangeEvent, type FC } from "react";
+import {
+    useRef,
+    useState,
+    type ChangeEventHandler,
+    type FC,
+    type KeyboardEventHandler,
+} from "react";
 import { Cursor } from "../../components/cursor";
 import {
     getLetterColor,
@@ -6,6 +12,7 @@ import {
     type CursorPosition,
     type Word,
 } from "../../hooks/use-typing-logic";
+import { isTypedCharacterAllowed } from "../../util";
 
 type TextContainerProps = {
     mappedWords: Word[];
@@ -43,7 +50,7 @@ export const TextContainer: FC<TextContainerProps> = ({
         return true;
     };
 
-    const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleInput: ChangeEventHandler<HTMLInputElement> = (e) => {
         if (hasFocus) {
             if (!isPlaying) {
                 startLoop();
@@ -52,6 +59,26 @@ export const TextContainer: FC<TextContainerProps> = ({
                 handleKeyboardClick(e.target.value);
                 setText(e.target.value);
             }
+        }
+    };
+
+    const handleOnKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+        const navKeys = [
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowUp",
+            "ArrowDown",
+            "Home",
+            "End",
+        ];
+
+        const textManipulationKeys = ["a", "A", "c", "C", "v", "V", "x", "X"];
+
+        if (
+            navKeys.includes(e.key) ||
+            (e.ctrlKey && textManipulationKeys.includes(e.key))
+        ) {
+            e.preventDefault();
         }
     };
 
@@ -64,6 +91,7 @@ export const TextContainer: FC<TextContainerProps> = ({
                 ref={ref}
                 autoFocus
                 value={text}
+                onKeyDown={handleOnKeyDown}
                 onChange={handleInput}
                 id="text-container"
                 className="absolute opacity-0 pointer-events-none w-0 h-0"
