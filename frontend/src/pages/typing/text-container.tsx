@@ -40,7 +40,7 @@ export const TextContainer: FC<TextContainerProps> = ({
     return (
         <div
             onClick={() => ref.current?.focus()}
-            className="relative text-3xl w-11/12 text-center max-h-75 overflow-hidden mb-5"
+            className="relative text-3xl w-11/12 text-center mb-5"
         >
             <input
                 ref={ref}
@@ -51,24 +51,32 @@ export const TextContainer: FC<TextContainerProps> = ({
                 onFocus={() => setHasFocus(true)}
                 onBlur={() => setHasFocus(false)}
             ></input>
-            {mappedWords.map((w, wi) => (
-                <span key={wi} className="inline-block">
-                    <span className="whitespace-pre"> </span>
-                    {cursorPos.w === wi && cursorPos.l === 0 && hasFocus && (
-                        <Cursor ref={cursorRef}></Cursor>
-                    )}
-                    <span className={getWordColor(w.status)}>
-                        {w.letters.map((l, li) => (
-                            <span key={li}>
-                                <span className={getLetterColor(l.status)}>{l.letter}</span>
-                                {cursorPos.w === wi && cursorPos.l - 1 === li && hasFocus && (
-                                    <Cursor ref={cursorRef}></Cursor>
-                                )}
-                            </span>
-                        ))}
+            {mappedWords
+                .slice(
+                    Math.floor(cursorPos.w / 60) * 60,
+                    Math.ceil((cursorPos.w + 1) / 60) * 60,
+                )
+                .map((w, wi) => (
+                    <span
+                        key={wi + Math.floor(cursorPos.w / 60) * 60}
+                        className="inline-block"
+                    >
+                        <span className="whitespace-pre"> </span>
+                        {cursorPos.w === wi + Math.floor(cursorPos.w / 60) * 60 &&
+                            cursorPos.l === 0 &&
+                            hasFocus && <Cursor ref={cursorRef}></Cursor>}
+                        <span className={getWordColor(w.status)}>
+                            {w.letters.map((l, li) => (
+                                <span key={li}>
+                                    <span className={getLetterColor(l.status)}>{l.letter}</span>
+                                    {cursorPos.w === wi + Math.floor(cursorPos.w / 60) * 60 &&
+                                        cursorPos.l - 1 === li &&
+                                        hasFocus && <Cursor ref={cursorRef}></Cursor>}
+                                </span>
+                            ))}
+                        </span>
                     </span>
-                </span>
-            ))}
+                ))}
         </div>
     );
 };

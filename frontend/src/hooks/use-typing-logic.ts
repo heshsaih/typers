@@ -40,24 +40,6 @@ export const getLetterColor = (status: LetterStatus) => {
     }
 };
 
-const setLettersStatus = (
-    words: Word[],
-    wi: number,
-    listart: number,
-    liend: number,
-    status: LetterStatus,
-): Word[] => {
-    if (listart >= words[wi].letters.length || liend > words[wi].letters.length) {
-        return words;
-    }
-
-    for (let i = listart; i < liend; i++) {
-        words[wi].letters[i].status = status;
-    }
-
-    return words;
-};
-
 export const useTypingLogic = (words: string[] | null) => {
     const [cursorPos, setCursorPos] = useState<CursorPosition>({
         w: 0,
@@ -89,6 +71,36 @@ export const useTypingLogic = (words: string[] | null) => {
             w: currentWords.length - 1,
             l: currentWords[currentWords.length - 1].length,
         });
+
+        let newMappedWords = [...mappedWords];
+
+        for (let i = 0; i < newMappedWords.length; i++) {
+            newMappedWords[i].status = "NONE";
+            if (i < currentWords.length) {
+                for (let j = 0; j < newMappedWords[i].letters.length; j++) {
+                    newMappedWords[i].letters[j].status = "NONE";
+                }
+            }
+        }
+
+        for (let i = 0; i < currentWords.length; i++) {
+            let newMappedWord = newMappedWords[i];
+
+            if (currentWords[i] === newMappedWord.letters.join("")) {
+                newMappedWord.status = "CORRECT";
+            } else {
+                for (let j = 0; j < currentWords[i].length; j++) {
+                    const currentLetter = newMappedWord.letters[j];
+                    if (currentLetter.letter === currentWords[i][j]) {
+                        currentLetter.status = "CORRECT";
+                    } else {
+                        currentLetter.status = "INCORRECT";
+                        newMappedWord.status = "INCORRECT";
+                    }
+                }
+            }
+        }
+        setMappedWords(newMappedWords);
     };
 
     return {
