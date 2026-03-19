@@ -24,3 +24,10 @@ export const parseJWT = (token: string | undefined | null): JWT | null => {
         return null;
     }
 };
+
+export const isTypedCharacterAllowed = (char: string): boolean => {
+    if (char.length !== 1) return false;
+    const code = char.charCodeAt(0);
+    //small character, big character or the "-" dash
+    return (code > 64 && code < 91) || (code > 96 && code < 123) || code === 45;
+};

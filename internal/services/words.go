@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"typers/internal/enums"
 )
 
@@ -40,7 +41,7 @@ func GetWords(amount int) ([]string, error) {
 
 	var response []string
 	for i := range parsedApiResponse {
-		response = append(response, parsedApiResponse[i].Word)
+		response = append(response, strings.ReplaceAll(parsedApiResponse[i].Word, " ", "-"))
 	}
 
 	return response, nil

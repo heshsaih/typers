@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FC } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FC } from "react";
 import { Cursor } from "../../components/cursor";
 import {
     getLetterColor,
@@ -10,15 +10,9 @@ import {
 type TextContainerProps = {
     mappedWords: Word[];
     cursorPos: CursorPosition;
-    handleKeyboardClick: (e: KeyboardEvent) => void;
+    handleKeyboardClick: (inputText: string) => void;
     isPlaying: boolean;
     startLoop: () => void;
-};
-
-const isAlphanumeric = (e: string) => {
-    if (e.length !== 1) return false;
-    const code = e.charCodeAt(0);
-    return (code > 64 && code < 91) || (code > 96 && code < 123);
 };
 
 export const TextContainer: FC<TextContainerProps> = ({
@@ -28,41 +22,35 @@ export const TextContainer: FC<TextContainerProps> = ({
     startLoop,
     isPlaying,
 }) => {
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLInputElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
     const cursorRef = useRef<HTMLSpanElement>(null);
 
-    useEffect(() => {
-        const handleClick = (e: KeyboardEvent) => {
-            if (hasFocus) {
-                if (!isPlaying && isAlphanumeric(e.key)) {
-                    startLoop();
-                }
-                handleKeyboardClick(e);
+    const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
+        if (hasFocus) {
+            if (!isPlaying) {
+                startLoop();
             }
-        };
+            handleKeyboardClick(e.target.value);
+        }
 
         cursorRef.current?.scrollIntoView();
-
-        document.addEventListener("keydown", handleClick);
-        return () => {
-            document.removeEventListener("keydown", handleClick);
-        };
-    }, [cursorPos, hasFocus]);
+    };
 
     return (
         <div
             onClick={() => ref.current?.focus()}
             className="relative text-3xl w-11/12 text-center max-h-75 overflow-hidden mb-5"
         >
-            <button
+            <input
                 ref={ref}
                 autoFocus
+                onChange={handleInput}
                 id="text-container"
-                className="focus:outline-none"
+                className="absolute opacity-0 pointer-events-none w-0 h-0"
                 onFocus={() => setHasFocus(true)}
                 onBlur={() => setHasFocus(false)}
-            ></button>
+            ></input>
             {mappedWords.map((w, wi) => (
                 <span key={wi} className="inline-block">
                     <span className="whitespace-pre"> </span>
@@ -72,9 +60,7 @@ export const TextContainer: FC<TextContainerProps> = ({
                     <span className={getWordColor(w.status)}>
                         {w.letters.map((l, li) => (
                             <span key={li}>
-                                <span className={getLetterColor(l.status)}>
-                                    {l.letter}
-                                </span>
+                                <span className={getLetterColor(l.status)}>{l.letter}</span>
                                 {cursorPos.w === wi && cursorPos.l - 1 === li && hasFocus && (
                                     <Cursor ref={cursorRef}></Cursor>
                                 )}
