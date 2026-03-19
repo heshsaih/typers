@@ -19,6 +19,7 @@ type TextContainerProps = {
     handleKeyboardClick: (inputText: string) => void;
     isPlaying: boolean;
     startLoop: () => void;
+    isWordsMode: boolean;
 };
 
 export const TextContainer: FC<TextContainerProps> = ({
@@ -27,6 +28,7 @@ export const TextContainer: FC<TextContainerProps> = ({
     handleKeyboardClick,
     startLoop,
     isPlaying,
+    isWordsMode,
 }) => {
     const ref = useRef<HTMLInputElement>(null);
     const [hasFocus, setHasFocus] = useState<boolean>(false);
@@ -82,9 +84,17 @@ export const TextContainer: FC<TextContainerProps> = ({
     };
 
     const renderTextField = () => {
-        const low = cursorPos.w < 30 ? 0 : Math.ceil((cursorPos.w - 30) / 10) * 10;
-        const high =
-            cursorPos.w < 30 ? 60 : Math.ceil((cursorPos.w - 30) / 10) * 10 + 60;
+        let low;
+        let high;
+
+        if (isWordsMode) {
+            low = 0;
+            high = mappedWords.length;
+        } else {
+            low = cursorPos.w < 30 ? 0 : Math.ceil((cursorPos.w - 30) / 10) * 10;
+            high =
+                cursorPos.w < 30 ? 60 : Math.ceil((cursorPos.w - 30) / 10) * 10 + 60;
+        }
 
         return mappedWords.slice(low, high).map((w, wi) => (
             <span key={wi + low} className="inline-block">
@@ -123,32 +133,6 @@ export const TextContainer: FC<TextContainerProps> = ({
                 onBlur={() => setHasFocus(false)}
             ></input>
             {renderTextField()}
-            {/* {mappedWords */}
-            {/*     .slice( */}
-            {/*         Math.floor(cursorPos.w / 60) * 60, */}
-            {/*         Math.ceil((cursorPos.w + 1) / 60) * 60, */}
-            {/*     ) */}
-            {/*     .map((w, wi) => ( */}
-            {/*         <span */}
-            {/*             key={wi + Math.floor(cursorPos.w / 60) * 60} */}
-            {/*             className="inline-block" */}
-            {/*         > */}
-            {/*             <span className="whitespace-pre"> </span> */}
-            {/*             {cursorPos.w === wi + Math.floor(cursorPos.w / 60) * 60 && */}
-            {/*                 cursorPos.l === 0 && */}
-            {/*                 hasFocus && <Cursor ref={cursorRef}></Cursor>} */}
-            {/*             <span className={getWordColor(w.status)}> */}
-            {/*                 {w.letters.map((l, li) => ( */}
-            {/*                     <span key={li}> */}
-            {/*                         <span className={getLetterColor(l.status)}>{l.letter}</span> */}
-            {/*                         {cursorPos.w === wi + Math.floor(cursorPos.w / 60) * 60 && */}
-            {/*                             cursorPos.l - 1 === li && */}
-            {/*                             hasFocus && <Cursor ref={cursorRef}></Cursor>} */}
-            {/*                     </span> */}
-            {/*                 ))} */}
-            {/*             </span> */}
-            {/*         </span> */}
-            {/*     ))} */}
         </div>
     );
 };

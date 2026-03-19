@@ -100,6 +100,7 @@ export const TypingPage: FC = () => {
                         <>wp wp</>
                     ) : (
                         <TextContainer
+                            isWordsMode={config.gameType === "words"}
                             startLoop={startLoop}
                             mappedWords={mappedWords}
                             cursorPos={cursorPos}
