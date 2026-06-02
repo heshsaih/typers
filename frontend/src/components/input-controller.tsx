@@ -72,7 +72,7 @@ export const InputController: FC<PropsWithChildren> = ({ children }) => {
     };
 
     return (
-        <div onClick={() => ref.current?.focus()}>
+        <div className="w-full" onClick={() => ref.current?.focus()}>
             {children}
             <input
                 ref={ref}

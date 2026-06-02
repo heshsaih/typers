@@ -1,34 +1,109 @@
-import { useEffect, type FC } from "react";
-import { useInputHandling } from "../../hooks/use-input-handling";
+import { useEffect, useRef, useState, type FC } from "react";
 import { Container } from "../../components/container";
-import {
-    InputController,
-    useInputStore,
-} from "../../components/input-controller";
+import { InputController } from "../../components/input-controller";
 import { useWords } from "../../hooks/use-words";
-import { Spinner } from "../../components/spinner";
+
+export function createTextMeasurer(font: string) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (ctx === null) {
+        throw new Error("woopsies");
+    }
+    ctx.font = font;
+
+    return {
+        measureWord(word: string) {
+            return ctx.measureText(word).width;
+        },
+
+        measureWords(words: string[]) {
+            return words.map((word, index) => ({
+                index,
+                word,
+                width: ctx.measureText(word).width,
+            }));
+        },
+    };
+}
+
+type MeasuredWord = {
+    index: number;
+    word: string;
+    width: number;
+};
+
+type Line = MeasuredWord[];
+
+export function buildLines(
+    words: MeasuredWord[],
+    containerWidth: number,
+    spaceWidth: number,
+): Line[] {
+    const result: Line[] = [];
+    let currentLine: Line = [];
+    let currentLineWidth = 0;
+
+    for (let i = 0; i < words.length; i++) {
+        const newWidth = currentLineWidth + words[i].width;
+        if (newWidth < containerWidth) {
+            currentLine.push(words[i]);
+            currentLineWidth = newWidth + spaceWidth;
+        } else {
+            result.push(currentLine);
+            currentLine = [];
+            currentLineWidth = 0;
+        }
+    }
+
+    return result;
+}
 
 export const TypingPage: FC = () => {
-    const state = useInputHandling();
-    const { input } = useInputStore();
-    const { data, isPending, error } = useWords();
+    const { data } = useWords();
+    const measurer = createTextMeasurer("500 30px JetBrains Mono");
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [lines, setLines] = useState<Line[]>();
+    const [containerWidth, setContainerWidth] = useState(0);
 
     useEffect(() => {
-        console.log(state);
-    }, [state]);
+        if (!containerRef.current) return;
+
+        const observer = new ResizeObserver(([entry]) => {
+            setContainerWidth(entry.contentRect.width);
+        });
+        observer.observe(containerRef.current);
+
+        return () => observer.disconnect();
+    }, [containerRef]);
+
+    useEffect(() => {
+        if (data && containerWidth !== 0) {
+            const measured = measurer.measureWords(data.words);
+            const lines = buildLines(
+                measured,
+                containerWidth,
+                measurer.measureWord(" "),
+            );
+            setLines(lines);
+        }
+    }, [data, containerWidth]);
 
     return (
         <Container>
             <InputController>
-                <Container>
-                    <h1>typing tego</h1>
-                    <div>{input}</div>
-                    {isPending && <Spinner></Spinner>}
-                    {data?.words.map((a) => (
-                        <span>{a}</span>
+                <div ref={containerRef} className="break-words text-3xl">
+                    {lines?.map((line) => (
+                        <div className="text-center">
+                            {line.map((word) => (
+                                <>
+                                    <span>{word.word}</span>
+                                    <span> </span>
+                                </>
+                            ))}
+                        </div>
                     ))}
-                    {String(error)}
-                </Container>
+                </div>
             </InputController>
         </Container>
     );
