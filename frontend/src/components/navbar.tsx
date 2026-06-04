@@ -16,7 +16,7 @@ export const Navbar: FC = () => {
         <div className="w-full static left-0 flex justify-between mt-5 mb-10">
             <div className="flex">
                 <Heading className="!m-0" type="h4">
-                    # typers
+                    typers
                 </Heading>
                 {!isMobile && (
                     <div className="flex ml-5">
