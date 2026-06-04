@@ -6,8 +6,8 @@ import { Container } from "../components/container";
 
 export const DefaultLayout: FC = () => {
     return (
-        <Container className="min-h-screen">
-            <Container className="container min-h-8/12">
+        <Container className="">
+            <Container className="container min-h-[75vh]">
                 <Navbar></Navbar>
                 <Outlet></Outlet>
             </Container>

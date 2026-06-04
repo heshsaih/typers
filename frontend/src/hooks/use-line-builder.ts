@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { useTextMeasure, type MeasuredWord } from "./useTextMeasure";
 
-type Line = MeasuredWord[];
+export type Line = {
+    words: MeasuredWord[];
+    highestIndex: number;
+};
 
 function buildLines(
     words: MeasuredWord[],
@@ -9,17 +12,20 @@ function buildLines(
     spaceWidth: number,
 ): Line[] {
     const result: Line[] = [];
-    let currentLine: Line = [];
+    let currentLineWords: MeasuredWord[] = [];
     let currentLineWidth = 0;
 
     for (let i = 0; i < words.length; i++) {
         const newWidth = currentLineWidth + words[i].width;
         if (newWidth < containerWidth) {
-            currentLine.push(words[i]);
+            currentLineWords.push(words[i]);
             currentLineWidth = newWidth + spaceWidth;
         } else {
-            result.push(currentLine);
-            currentLine = [words[i]];
+            result.push({
+                words: currentLineWords,
+                highestIndex: i - 1,
+            });
+            currentLineWords = [words[i]];
             currentLineWidth = words[i].width + spaceWidth;
         }
     }
