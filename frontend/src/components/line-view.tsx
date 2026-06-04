@@ -1,4 +1,4 @@
-import { useMemo, type FC, type RefObject } from "react";
+import { useCallback, useMemo, type FC, type RefObject } from "react";
 import type { Line } from "../hooks/use-line-builder";
 
 type LineViewProps = {
@@ -13,6 +13,7 @@ type ViewWindow = {
 };
 
 export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
+    const inputWords: string[] = useMemo(() => input.split(" "), [input]);
     const window: ViewWindow = useMemo(() => {
         const currentWord = input.split(" ").length - 1;
         let counter = 0;
@@ -40,16 +41,49 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
         };
     }, [input]);
 
+    const renderWord = useCallback(
+        (placeholder: string, currentWordIdx: number) => {
+            const a = inputWords[currentWordIdx];
+            if (!a) {
+                return (
+                    <span className="word">
+                        <span className="text-text-disabled">{placeholder}</span>
+                        <span> </span>
+                    </span>
+                );
+            }
+
+            const b = placeholder.slice(a.length, placeholder.length);
+            return (
+                <span className={`word `}>
+                    <span>
+                        <span
+                            className={`${currentWordIdx !== inputWords.length - 1 && a !== placeholder ? "underline decoration-error" : ""}`}
+                        >
+                            {a.split("").map((letter, index) => (
+                                <span
+                                    className={
+                                        letter === placeholder[index] ? "text-text" : "text-error"
+                                    }
+                                >
+                                    {letter}
+                                </span>
+                            ))}
+                            <span className="text-text-disabled">{b}</span>
+                        </span>
+                    </span>
+                    <span className="no-underline"> </span>
+                </span>
+            );
+        },
+        [inputWords],
+    );
+
     return (
-        <div ref={containerRef} className="text-text-disabled text-center">
+        <div ref={containerRef} className="text-center w-full">
             {lines.slice(window.low, window.high).map((line) => (
                 <div className="text-3xl">
-                    {line.words.map((word) => (
-                        <>
-                            <span>{word.word}</span>
-                            <span> </span>
-                        </>
-                    ))}
+                    {line.words.map((word) => renderWord(word.word, word.index))}
                 </div>
             ))}
         </div>

@@ -1,4 +1,5 @@
 import {
+    useEffect,
     useLayoutEffect,
     useRef,
     type ChangeEvent,
@@ -54,12 +55,16 @@ export const useInputStore = create<InputStore>((set) => ({
 }));
 
 export const InputController: FC<PropsWithChildren> = ({ children }) => {
-    const { input, setInput, resetState, setHasFocus } = useInputStore();
+    const { input, hasFocus, setInput, resetState, setHasFocus } = useInputStore();
     const ref = useRef<HTMLInputElement>(null);
 
     useLayoutEffect(() => {
         resetState();
     }, []);
+
+    useEffect(() => {
+        if (hasFocus) ref.current?.focus();
+    }, [hasFocus]);
 
     const handleOnKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (

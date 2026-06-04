@@ -78,5 +78,6 @@ export const useGameConfig = () => {
         setWords,
         config,
         setConfig,
+        getNewWords,
     };
 };

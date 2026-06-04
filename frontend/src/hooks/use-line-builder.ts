@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { useTextMeasure, type MeasuredWord } from "./useTextMeasure";
+import { useTextMeasure, type MeasuredWord } from "./use-text-measure";
 
 export type Line = {
     words: MeasuredWord[];
