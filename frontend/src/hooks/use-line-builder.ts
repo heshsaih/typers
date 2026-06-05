@@ -48,7 +48,7 @@ type UseLineBuilder = {
 
 export const useLineBuilder = (words: string[]): UseLineBuilder => {
     const { spaceWidth, measureWords } = useTextMeasure(
-        "500 36px JetBrains Mono",
+        "500 48px JetBrains Mono",
     );
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerWidth, setContainerWidth] = useState<number>(0);

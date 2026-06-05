@@ -25,12 +25,12 @@ export const ConfigDisplay: FC<ConfigDisplayProps> = ({ disabled }) => {
                 <DropdownButton
                     onClick={() => !disabled && setConfig({ type: "time" })}
                 >
-                    "time"
+                    time
                 </DropdownButton>
                 <DropdownButton
                     onClick={() => !disabled && setConfig({ type: "words" })}
                 >
-                    "words"
+                    words
                 </DropdownButton>
             </Dropdown>
             <span>,&#160;"amount":&#160;</span>
@@ -42,7 +42,7 @@ export const ConfigDisplay: FC<ConfigDisplayProps> = ({ disabled }) => {
                 {(config.type === "words" ? WORD_PRESETS : TIME_PRESETS).map(
                     (value) => (
                         <DropdownButton onClick={() => setConfig({ amount: value })}>
-                            "{value}"
+                            {value}
                         </DropdownButton>
                     ),
                 )}
