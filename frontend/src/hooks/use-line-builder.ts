@@ -14,8 +14,9 @@ function buildLines(
     const result: Line[] = [];
     let currentLineWords: MeasuredWord[] = [];
     let currentLineWidth = 0;
+    let i: number;
 
-    for (let i = 0; i < words.length; i++) {
+    for (i = 0; i < words.length; i++) {
         const newWidth = currentLineWidth + words[i].width;
         if (newWidth < containerWidth) {
             currentLineWords.push(words[i]);
@@ -23,11 +24,18 @@ function buildLines(
         } else {
             result.push({
                 words: currentLineWords,
-                highestIndex: i - 1,
+                highestIndex: i,
             });
             currentLineWords = [words[i]];
             currentLineWidth = words[i].width + spaceWidth;
         }
+    }
+
+    if (currentLineWords.length !== 0) {
+        result.push({
+            words: currentLineWords,
+            highestIndex: i,
+        });
     }
 
     return result;
@@ -40,7 +48,7 @@ type UseLineBuilder = {
 
 export const useLineBuilder = (words: string[]): UseLineBuilder => {
     const { spaceWidth, measureWords } = useTextMeasure(
-        "500 30px JetBrains Mono",
+        "500 36px JetBrains Mono",
     );
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerWidth, setContainerWidth] = useState<number>(0);

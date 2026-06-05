@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { create } from "zustand";
 import { useWords } from "./use-words";
 
-const WORD_PRESETS = [15, 30, 60, 120] as const;
-const TIME_PRESETS = [15, 30, 60, 120] as const;
+export const WORD_PRESETS = [15, 30, 60, 120] as const;
+export const TIME_PRESETS = [15, 30, 60, 120] as const;
 
 type GameConfig =
     | {
@@ -17,20 +17,20 @@ type GameConfig =
 
 type GameStore = {
     config: GameConfig;
-    setConfig: (config: GameConfig) => void;
+    setConfig: (config: Partial<GameConfig>) => void;
     words: string[];
     setWords: (words: string[]) => void;
     resetConfig: () => void;
 };
 
-const gameStore = create<GameStore>((set) => ({
+const gameStore = create<GameStore>((set, get) => ({
     config: {
         type: "time",
         amount: 30,
     },
     setConfig: (config) =>
         set({
-            config,
+            config: { ...get().config, ...config },
         }),
     words: [],
     setWords: (words) =>

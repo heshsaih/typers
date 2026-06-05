@@ -30,7 +30,7 @@ export const TransparentButton: FC<TransparentButtonProps> = ({
 
     return (
         <button
-            className={`${changeOnHover ? "hover:bg-accent-secondary" : ""} h-full cursor-pointer ${borderClass} border-background-secondary px-6 ${className ?? ""}`}
+            className={`${changeOnHover ? "hover:bg-accent-secondary" : ""} h-full cursor-pointer ${borderClass} border-background-secondary ${className ?? ""}`}
             style={{ ...style }}
             {...rest}
         ></button>

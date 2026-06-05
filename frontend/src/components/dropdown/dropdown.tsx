@@ -12,6 +12,7 @@ import { TransparentButton } from "../transparent-button";
 
 type DropdownProps = HTMLAttributes<HTMLDivElement> & {
     label?: string;
+    disabled?: boolean;
 };
 
 export const Dropdown: FC<DropdownProps> = ({
@@ -19,6 +20,7 @@ export const Dropdown: FC<DropdownProps> = ({
     className,
     style,
     label,
+    disabled,
     ...rest
 }) => {
     const [open, setOpen] = useState(false);
@@ -64,17 +66,17 @@ export const Dropdown: FC<DropdownProps> = ({
     return (
         <div className={`h-full ${className ?? ""}`} style={style} {...rest}>
             <TransparentButton
+                changeOnHover={!disabled}
                 className="h-full"
                 ref={buttonRef}
-                onClick={() => setOpen(!open)}
-                border="both"
+                onClick={() => !disabled && setOpen(!open)}
             >
                 {label}
             </TransparentButton>
             {open && (
                 <div
                     ref={listRef}
-                    className="fixed bg-background-primary border border-text-text mt-1 py-3 px-1 rounded-sm"
+                    className="fixed bg-background-primary border border-accent-primary border-text-text rounded-sm"
                 >
                     <ul>{childrenWithProps}</ul>
                 </div>

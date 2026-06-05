@@ -82,7 +82,7 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
     return (
         <div ref={containerRef} className="text-center w-full">
             {lines.slice(window.low, window.high).map((line) => (
-                <div className="text-3xl">
+                <div className="text-4xl">
                     {line.words.map((word) => renderWord(word.word, word.index))}
                 </div>
             ))}

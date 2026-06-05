@@ -18,7 +18,7 @@ export const Button: FC<ButtonProps> = ({
         : "bg-accent-primary hover:bg-accent-secondary hover:cursor-pointer";
     return (
         <button
-            className={`${classesBasedOnDisabled} rounded-sm px-3 py-1 m-1 ${className}`}
+            className={`${classesBasedOnDisabled} px-3 py-1 m-1 ${className}`}
             style={style}
             {...rest}
             children={isPending ? <Spinner></Spinner> : children}

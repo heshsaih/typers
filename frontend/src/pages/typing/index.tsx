@@ -8,6 +8,8 @@ import { useGameConfig } from "../../hooks/use-game";
 import { useLineBuilder } from "../../hooks/use-line-builder";
 import { LineView } from "../../components/line-view";
 import { Button } from "../../components/button";
+import { ConfigDisplay } from "../../components/config-display";
+import { Heading } from "../../components/heading";
 
 export const TypingPage: FC = () => {
     const { config, words, getNewWords } = useGameConfig();
@@ -16,8 +18,10 @@ export const TypingPage: FC = () => {
 
     return (
         <Container>
-            <h1>config</h1>
-            <span>{JSON.stringify(config, null, 2)}</span>
+            <Heading type="h1">
+                {config.amount} {config.type === "words" ? "words" : "seconds"}
+            </Heading>
+            <ConfigDisplay></ConfigDisplay>
             <InputController>
                 <LineView
                     containerRef={containerRef}
@@ -25,10 +29,14 @@ export const TypingPage: FC = () => {
                     input={input}
                 ></LineView>
             </InputController>
-            <Button onClick={() => {
-                getNewWords();
-                setInput("");
-            }}>reset</Button>
+            <Button
+                onClick={() => {
+                    getNewWords();
+                    setInput("");
+                }}
+            >
+                reset
+            </Button>
         </Container>
     );
 };
