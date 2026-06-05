@@ -44,8 +44,8 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
 
     const renderWord = useCallback(
         (placeholder: string, currentWordIdx: number) => {
-            const a = inputWords[currentWordIdx];
-            if (a === undefined) {
+            let currentWord = inputWords[currentWordIdx];
+            if (currentWord === undefined) {
                 return (
                     <span className="word">
                         {currentWordIdx === inputWords.length - 1 && <Caret></Caret>}
@@ -55,23 +55,24 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
                 );
             }
 
-            const b = placeholder.slice(a.length, placeholder.length);
             return (
                 <span className="word">
                     <span
-                        className={`${currentWordIdx !== inputWords.length - 1 && a !== placeholder ? "underline decoration-error" : ""}`}
+                        className={`${(currentWordIdx !== inputWords.length - 1 && currentWord !== placeholder) || currentWord.length > placeholder.length ? "underline decoration-error" : ""}`}
                     >
-                        {a.split("").map((letter, index) => (
+                        {currentWord.split("").map((letter, index) => (
                             <span
                                 className={
                                     letter === placeholder[index] ? "text-text" : "text-error"
                                 }
                             >
-                                {letter}
+                                {placeholder[index] || letter}
                             </span>
                         ))}
                         {currentWordIdx === inputWords.length - 1 && <Caret></Caret>}
-                        <span className="text-text-disabled">{b}</span>
+                        <span className="text-text-disabled">
+                            {placeholder.slice(currentWord.length, placeholder.length)}
+                        </span>
                     </span>
                     <span className="no-underline"> </span>
                 </span>

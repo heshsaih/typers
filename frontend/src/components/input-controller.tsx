@@ -1,13 +1,11 @@
 import {
-    useEffect,
     useLayoutEffect,
     useRef,
-    type ChangeEvent,
     type FC,
     type KeyboardEventHandler,
     type PropsWithChildren,
 } from "react";
-import { create } from "zustand";
+import { useInputController } from "../hooks/use-input-controller";
 
 const NAVIGATION_KEYS = [
     "ArrowLeft",
@@ -33,38 +31,13 @@ const TEXT_MANIPULATION_KEYS = [
 
 type TextManipulaitonKeys = (typeof TEXT_MANIPULATION_KEYS)[number];
 
-type InputStore = {
-    input: string;
-    setInput: (str: string | ChangeEvent<HTMLInputElement>) => void;
-    hasFocus: boolean;
-    setHasFocus: (value: boolean) => void;
-    resetState: () => void;
-};
-
-export const useInputStore = create<InputStore>((set) => ({
-    input: "",
-    setInput: (value) =>
-        set({ input: typeof value === "string" ? value : value.target.value }),
-    hasFocus: false,
-    setHasFocus: (value) => set({ hasFocus: value }),
-    resetState: () =>
-        set({
-            hasFocus: true,
-            input: "",
-        }),
-}));
-
 export const InputController: FC<PropsWithChildren> = ({ children }) => {
-    const { input, hasFocus, setInput, resetState, setHasFocus } = useInputStore();
+    const { setInputRef, setHasFocus, input, setInput } = useInputController();
     const ref = useRef<HTMLInputElement>(null);
 
     useLayoutEffect(() => {
-        resetState();
-    }, []);
-
-    useEffect(() => {
-        if (hasFocus) ref.current?.focus();
-    }, [hasFocus]);
+        setInputRef(ref);
+    }, [ref]);
 
     const handleOnKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (

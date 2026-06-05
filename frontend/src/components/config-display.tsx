@@ -1,8 +1,9 @@
-import type { FC } from "react";
+import { useEffect, type FC } from "react";
 import { TIME_PRESETS, useGameConfig, WORD_PRESETS } from "../hooks/use-game";
 import { Container } from "./container";
 import { Dropdown } from "./dropdown/dropdown";
 import { DropdownButton } from "./dropdown/dropdown-button";
+import { useInputController } from "../hooks/use-input-controller";
 
 type ConfigDisplayProps = {
     disabled?: boolean;
@@ -10,6 +11,12 @@ type ConfigDisplayProps = {
 
 export const ConfigDisplay: FC<ConfigDisplayProps> = ({ disabled }) => {
     const { config, setConfig } = useGameConfig();
+    const { setInput, inputRef } = useInputController();
+
+    useEffect(() => {
+        setInput("");
+        inputRef?.current?.focus();
+    }, [config]);
 
     return (
         <Container
