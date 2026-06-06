@@ -3,6 +3,7 @@ import { useTextMeasure, type MeasuredWord } from "./use-text-measure";
 
 export type Line = {
     words: MeasuredWord[];
+    lowestIndex: number;
     highestIndex: number;
 };
 
@@ -24,7 +25,8 @@ function buildLines(
         } else {
             result.push({
                 words: currentLineWords,
-                highestIndex: i,
+                lowestIndex: i - currentLineWords.length,
+                highestIndex: i - 1,
             });
             currentLineWords = [words[i]];
             currentLineWidth = words[i].width + spaceWidth;
@@ -34,9 +36,12 @@ function buildLines(
     if (currentLineWords.length !== 0) {
         result.push({
             words: currentLineWords,
-            highestIndex: i,
+            lowestIndex: i - currentLineWords.length,
+            highestIndex: i - 1,
         });
     }
+
+    console.log(result)
 
     return result;
 }

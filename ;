@@ -13,7 +13,7 @@ type ViewWindow = {
     high: number;
 };
 
-const LINE_AMOUNT = 5 as const;
+const LINE_AMOUNT = 9 as const;
 
 export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
     const inputWords: string[] = useMemo(() => input.split(" "), [input]);
@@ -23,8 +23,8 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
 
         for (let i = 0; i < lines.length; i++) {
             if (
-                currentWord >= lines[i].lowestIndex &&
-                currentWord <= lines[i].highestIndex + 1
+                currentWord > lines[i].highestIndex - lines[i].words.length &&
+                currentWord <= lines[i].highestIndex
             ) {
                 currentLine = i + 1;
                 break;
@@ -35,11 +35,11 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
         if (currentLine <= middle) {
             return {
                 low: 0,
-                high: LINE_AMOUNT,
+                high: 5,
             };
         }
 
-        if (currentLine + middle >= lines.length) {
+        if (currentLine + 2 >= lines.length) {
             return {
                 low: lines.length - LINE_AMOUNT,
                 high: lines.length,
@@ -48,7 +48,7 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
 
         return {
             low: currentLine - middle,
-            high: currentLine + (LINE_AMOUNT % 2 === 0 ? middle : middle - 1),
+            high: currentLine + middle - 1,
         };
     }, [input]);
 
