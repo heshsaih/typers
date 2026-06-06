@@ -15,6 +15,8 @@ type GameConfig =
         amount: (typeof WORD_PRESETS)[number];
     };
 
+export type GameType = GameConfig["type"];
+
 type GameStore = {
     config: GameConfig;
     setConfig: (config: Partial<GameConfig>) => void;

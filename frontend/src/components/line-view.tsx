@@ -6,6 +6,7 @@ type LineViewProps = {
     lines: Line[];
     input: string;
     containerRef: RefObject<HTMLDivElement | null>;
+    hasFocus?: boolean;
 };
 
 type ViewWindow = {
@@ -15,7 +16,12 @@ type ViewWindow = {
 
 const LINE_AMOUNT = 5 as const;
 
-export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
+export const LineView: FC<LineViewProps> = ({
+    lines,
+    input,
+    containerRef,
+    hasFocus,
+}) => {
     const inputWords: string[] = useMemo(() => input.split(" "), [input]);
     const window: ViewWindow = useMemo(() => {
         const currentWord = input.split(" ").length;
@@ -58,7 +64,9 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
             if (currentWord === undefined) {
                 return (
                     <span className="word">
-                        {currentWordIdx === inputWords.length - 1 && <Caret></Caret>}
+                        {currentWordIdx === inputWords.length - 1 && hasFocus && (
+                            <Caret></Caret>
+                        )}
                         <span className="text-text-disabled">{placeholder}</span>
                         <span> </span>
                     </span>
@@ -79,7 +87,9 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
                                 {placeholder[index] || letter}
                             </span>
                         ))}
-                        {currentWordIdx === inputWords.length - 1 && <Caret></Caret>}
+                        {currentWordIdx === inputWords.length - 1 && hasFocus && (
+                            <Caret></Caret>
+                        )}
                         <span className="text-text-disabled">
                             {placeholder.slice(currentWord.length, placeholder.length)}
                         </span>
@@ -88,7 +98,7 @@ export const LineView: FC<LineViewProps> = ({ lines, input, containerRef }) => {
                 </span>
             );
         },
-        [inputWords],
+        [inputWords, hasFocus],
     );
 
     return (

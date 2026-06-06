@@ -1,5 +1,5 @@
 import { useEffect, type FC } from "react";
-import { TIME_PRESETS, useGameConfig, WORD_PRESETS } from "../hooks/use-game";
+import { TIME_PRESETS, useGameConfig, WORD_PRESETS } from "../hooks/use-game-config";
 import { Container } from "./container";
 import { Dropdown } from "./dropdown/dropdown";
 import { DropdownButton } from "./dropdown/dropdown-button";

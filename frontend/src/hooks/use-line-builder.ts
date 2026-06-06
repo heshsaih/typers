@@ -41,8 +41,6 @@ function buildLines(
         });
     }
 
-    console.log(result)
-
     return result;
 }
 

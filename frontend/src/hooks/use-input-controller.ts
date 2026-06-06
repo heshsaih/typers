@@ -14,7 +14,7 @@ const inputStore = create<InputStore>((set) => ({
     input: "",
     setInput: (value) =>
         set({ input: typeof value === "string" ? value : value.target.value }),
-    hasFocus: false,
+    hasFocus: true,
     setHasFocus: (value) => set({ hasFocus: value }),
     inputRef: undefined,
     setInputRef: (ref) => set({ inputRef: ref }),
