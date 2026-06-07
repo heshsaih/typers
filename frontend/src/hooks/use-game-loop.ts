@@ -4,6 +4,25 @@ import { useGameConfig, type GameType } from "./use-game-config";
 
 type GameState = "waiting" | "in-progress" | "finished";
 
+type TimeMeasurement = {
+    time: number;
+    words: number;
+};
+
+type LetterStatistics = {
+    correct: number;
+    incorrect: number;
+    extra: number;
+    missing: number;
+};
+
+export type GameResult = {
+    wpm: number;
+    accuracy: number;
+    timeMeasurements: TimeMeasurement[];
+    letterStatistics: LetterStatistics;
+};
+
 export interface GameLoop {
     start: () => void;
     update: () => void;
@@ -11,38 +30,107 @@ export interface GameLoop {
     restart: () => void;
     state: GameState;
     remainingToFinish: number;
+    result?: GameResult;
 }
+
+const calculateResult = (
+    input: string,
+    placeholders: string[],
+    timeMeasurements: TimeMeasurement[],
+): GameResult => {
+    const startTime = timeMeasurements[0].time;
+    const endTime = timeMeasurements[timeMeasurements.length - 1].time;
+    const time = endTime - startTime;
+    const inputWords = input.split(" ");
+
+    const wpm = inputWords.length * (60_000 / time);
+    timeMeasurements = timeMeasurements.map((measurement) => ({
+        words: measurement.words,
+        time: Math.floor((measurement.time - startTime) / 1000),
+    }));
+    let accurateWords = 0;
+    const letterStatistics: LetterStatistics = {
+        correct: 0,
+        incorrect: 0,
+        extra: 0,
+        missing: 0,
+    };
+
+    const amount = Math.min(inputWords.length, placeholders.length);
+
+    for (let i = 0; i < amount; i++) {
+        const inputWord = inputWords[i];
+        const placeholder = placeholders[i];
+
+        if (inputWord === placeholder) {
+            accurateWords++;
+        }
+
+        if (inputWord.length > placeholder.length) {
+            letterStatistics.extra += inputWord.length - placeholder.length;
+        } else if (inputWord.length < placeholder.length) {
+            letterStatistics.missing += placeholder.length - inputWord.length;
+        }
+
+        const length = Math.min(inputWord.length, placeholder.length);
+
+        for (let j = 0; j < length; j++) {
+            if (inputWord[j] === placeholder[j]) {
+                letterStatistics.correct += 1;
+            } else {
+                letterStatistics.incorrect += 1;
+            }
+        }
+    }
+
+    return {
+        wpm,
+        accuracy: accurateWords / inputWords.length,
+        timeMeasurements,
+        letterStatistics,
+    };
+};
 
 export const useTimeGameLoop = (): GameLoop => {
     const [state, setState] = useState<GameState>("waiting");
-    const { config } = useGameConfig();
+    const { config, words } = useGameConfig();
     const [timeRemaining, setTimeRemaining] = useState<number>(config.amount);
     const { hasFocus, input } = useInputController();
+    const [timeMeasurements, setTimeMeasurements] = useState<TimeMeasurement[]>(
+        [],
+    );
+    const [result, setResult] = useState<GameResult>();
 
     useEffect(() => {
         setTimeRemaining(config.amount);
     }, [config.amount]);
 
     const start = () => {
-        console.log("time - start")
         if (hasFocus) {
+            setTimeMeasurements([]);
             setState("in-progress");
         }
     };
 
     const finish = () => {
-        console.log("time - finish")
         setState("finished");
-        alert(`${(input.split(" ").length / config.amount) * 60} wpm 🫃`);
     };
 
     const update = () => {
-        console.log("time - update")
         const newTime = timeRemaining - 1;
         setTimeRemaining(newTime);
+        const newTimeMeasurements = [
+            ...timeMeasurements,
+            {
+                time: Date.now(),
+                words: input.split(" ").length,
+            },
+        ];
+        setTimeMeasurements(newTimeMeasurements);
 
         if (newTime === 0) {
             finish();
+            setResult(calculateResult(input, words, newTimeMeasurements));
         }
     };
 
@@ -69,47 +157,64 @@ export const useTimeGameLoop = (): GameLoop => {
         restart,
         state,
         remainingToFinish: timeRemaining,
+        result,
     };
 };
 
 export const useWordGameLoop = (): GameLoop => {
     const [state, setState] = useState<GameState>("waiting");
-    const { config } = useGameConfig();
+    const { config, words } = useGameConfig();
     const [wordsRemaining, setWordsRemaining] = useState<number>(config.amount);
     const { input } = useInputController();
     const wordsAmount = useMemo(() => input.split(" ").length, [input]);
-    const [startTime, setStartTime] = useState<number>();
+    const [timeMeasurements, setTimeMeasurements] = useState<TimeMeasurement[]>(
+        [],
+    );
+    const [result, setResult] = useState<GameResult>();
 
     useEffect(() => {
         setWordsRemaining(config.amount);
     }, [config.amount]);
 
+    useEffect(() => {
+        let timeout: number;
+        if (config.type === "words" && state === "in-progress") {
+            timeout = setTimeout(() => {
+                setTimeMeasurements([
+                    ...timeMeasurements,
+                    {
+                        time: Date.now(),
+                        words: input.split(" ").length,
+                    },
+                ]);
+            }, 1000);
+        }
+
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
+    }, [config, state, timeMeasurements, setTimeMeasurements]);
+
     const start = () => {
-        console.log("words - start")
-        setStartTime(Date.now());
+        setTimeMeasurements([]);
         setState("in-progress");
     };
 
     const finish = () => {
-        console.log("words - finish")
         setState("finished");
-        alert(
-            `${input.split(" ").length * (60000 / (Date.now() - startTime!))} wpm 🫃`,
-        );
     };
 
     const update = () => {
-        console.log("words - update")
         const newWordsRemaining = config.amount - wordsAmount;
         setWordsRemaining(newWordsRemaining);
 
         if (newWordsRemaining === -1) {
             finish();
+            setResult(calculateResult(input, words, timeMeasurements));
         }
     };
 
     const restart = () => {
-        console.log("words - restart")
         setState("waiting");
         setWordsRemaining(config.amount);
     };
@@ -125,6 +230,7 @@ export const useWordGameLoop = (): GameLoop => {
         restart,
         state,
         remainingToFinish: wordsRemaining,
+        result,
     };
 };
 
