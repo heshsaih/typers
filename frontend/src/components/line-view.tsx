@@ -1,12 +1,11 @@
 import { useCallback, useMemo, type FC, type RefObject } from "react";
 import type { Line } from "../hooks/use-line-builder";
 import { Caret } from "./caret";
+import { useInputController } from "../hooks/use-input-controller";
 
 type LineViewProps = {
     lines: Line[];
-    input: string;
     containerRef: RefObject<HTMLDivElement | null>;
-    hasFocus?: boolean;
 };
 
 type ViewWindow = {
@@ -16,12 +15,8 @@ type ViewWindow = {
 
 const LINE_AMOUNT = 5 as const;
 
-export const LineView: FC<LineViewProps> = ({
-    lines,
-    input,
-    containerRef,
-    hasFocus,
-}) => {
+export const LineView: FC<LineViewProps> = ({ lines, containerRef }) => {
+    const { input, hasFocus } = useInputController();
     const inputWords: string[] = useMemo(() => input.split(" "), [input]);
     const window: ViewWindow = useMemo(() => {
         const currentWord = input.split(" ").length;
@@ -38,7 +33,7 @@ export const LineView: FC<LineViewProps> = ({
         }
 
         const middle = Math.ceil(LINE_AMOUNT / 2);
-        if (currentLine <= middle) {
+        if (currentLine <= middle || lines.length < LINE_AMOUNT) {
             return {
                 low: 0,
                 high: LINE_AMOUNT,

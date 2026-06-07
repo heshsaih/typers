@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useInputController } from "./use-input-controller";
-import { useGameConfig } from "./use-game-config";
+import { useGameConfig, type GameType } from "./use-game-config";
 
 type GameState = "waiting" | "in-progress" | "finished";
 
@@ -24,17 +24,20 @@ export const useTimeGameLoop = (): GameLoop => {
     }, [config.amount]);
 
     const start = () => {
+        console.log("time - start")
         if (hasFocus) {
             setState("in-progress");
         }
     };
 
     const finish = () => {
+        console.log("time - finish")
         setState("finished");
         alert(`${(input.split(" ").length / config.amount) * 60} wpm 🫃`);
     };
 
     const update = () => {
+        console.log("time - update")
         const newTime = timeRemaining - 1;
         setTimeRemaining(newTime);
 
@@ -82,18 +85,21 @@ export const useWordGameLoop = (): GameLoop => {
     }, [config.amount]);
 
     const start = () => {
+        console.log("words - start")
         setStartTime(Date.now());
         setState("in-progress");
     };
 
     const finish = () => {
+        console.log("words - finish")
+        setState("finished");
         alert(
             `${input.split(" ").length * (60000 / (Date.now() - startTime!))} wpm 🫃`,
         );
-        setState("finished");
     };
 
     const update = () => {
+        console.log("words - update")
         const newWordsRemaining = config.amount - wordsAmount;
         setWordsRemaining(newWordsRemaining);
 
@@ -103,13 +109,14 @@ export const useWordGameLoop = (): GameLoop => {
     };
 
     const restart = () => {
+        console.log("words - restart")
         setState("waiting");
         setWordsRemaining(config.amount);
     };
 
     useEffect(() => {
-        if (state === "in-progress") update();
-    }, [wordsAmount, state]);
+        if (config.type === "words" && state === "in-progress") update();
+    }, [wordsAmount, state, config]);
 
     return {
         start,
@@ -119,4 +126,16 @@ export const useWordGameLoop = (): GameLoop => {
         state,
         remainingToFinish: wordsRemaining,
     };
+};
+
+export const useGameLoop: (type: GameType) => GameLoop = (type) => {
+    const timeLoop = useTimeGameLoop();
+    const wordLoop = useWordGameLoop();
+
+    switch (type) {
+        case "time":
+            return timeLoop;
+        case "words":
+            return wordLoop;
+    }
 };

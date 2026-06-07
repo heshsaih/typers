@@ -69,7 +69,7 @@ export const useLineBuilder = (words: string[]): UseLineBuilder => {
         observer.observe(containerRef.current);
 
         return () => observer.disconnect();
-    }, [containerRef]);
+    }, [containerRef.current]);
 
     return {
         lines,

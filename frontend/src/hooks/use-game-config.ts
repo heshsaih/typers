@@ -49,7 +49,7 @@ const gameStore = create<GameStore>((set, get) => ({
 }));
 
 export const useGameConfig = () => {
-    const { resetConfig, words, setWords, config, setConfig } = gameStore();
+    const { words, setWords, config, setConfig } = gameStore();
     const { data } = useWords();
 
     const getNewWords = () => {
@@ -67,7 +67,6 @@ export const useGameConfig = () => {
     };
 
     useEffect(() => {
-        resetConfig();
         getNewWords();
     }, [data]);
 
