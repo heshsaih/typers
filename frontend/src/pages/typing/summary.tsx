@@ -1,5 +1,7 @@
 import { type FC } from "react";
 import type { GameResult } from "../../hooks/use-game-loop";
+import { SummaryChart } from "../../components/summary-chart";
+import { Container } from "../../components/container";
 
 type SummaryProps = {
     result?: GameResult;
@@ -7,9 +9,9 @@ type SummaryProps = {
 
 export const Summary: FC<SummaryProps> = ({ result }) => {
     return (
-        <div>
-            niezle byniu
+        <Container>
             <span>{JSON.stringify(result)}</span>
-        </div>
+            <SummaryChart></SummaryChart>
+        </Container>
     );
 };

@@ -10,7 +10,7 @@ export const useWords = () => {
     const query = useQuery({
         queryKey: ["wordsApi"],
         queryFn: async () => {
-            const response = await client.get<WordsApiResponse>("/typing/words");
+            const response = await client.get<WordsApiResponse>("/words");
             return response.data;
         },
     });
