@@ -1,33 +1,32 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"typers/internal/service"
-
-	"github.com/gin-gonic/gin"
 )
 
-const DEFAULT_AMOUNT = 50
+const defaultAmount = 50
 
-type GetWordsResponse struct {
+type getWordsResponse struct {
 	Words []string `json:"words"`
 }
 
 func HandleGetWords(ctx *gin.Context) {
 	amount := parseAmount(ctx.GetQuery("amount"))
 	words := service.GetWords(amount)
-	ctx.JSON(http.StatusOK, GetWordsResponse{words})
+	ctx.JSON(http.StatusOK, getWordsResponse{words})
 }
 
 func parseAmount(param string, ok bool) int {
 	if !ok {
-		return DEFAULT_AMOUNT
+		return defaultAmount
 	}
 
 	amount, err := strconv.Atoi(param)
 	if err != nil {
-		return DEFAULT_AMOUNT
+		return defaultAmount
 	}
 
 	return amount
