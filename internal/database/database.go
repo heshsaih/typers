@@ -24,7 +24,6 @@ func Connect(cfg DatabseConnectionConfig) {
 	}
 
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Europe/Warsaw", cfg.Host, cfg.User, cfg.Password, cfg.DatabaseName, cfg.Port)
-	fmt.Println(dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		TranslateError: true,
