@@ -1,6 +1,9 @@
 #BACKEND
 main.exe
 main
+*
+!/**/
+!*.*
 
 #FRONTEND
 

@@ -38,7 +38,7 @@ func Connect(cfg DatabseConnectionConfig) {
 
 func GetConnection() *gorm.DB {
 	if database == nil {
-		log.Fatal("no db connection")
+		log.Fatal("no db connection, this should never happen")
 	}
 
 	return database
