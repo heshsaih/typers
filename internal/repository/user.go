@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"typers/internal/database"
 	"gorm.io/gorm"
+	"typers/internal/database"
 )
 
 type UserRole string
@@ -21,14 +21,14 @@ type User struct {
 	Role     UserRole `gorm:"required"`
 }
 
-func FindUserByEmail(email string) *User {
-	user, _ := gorm.G[User](database.GetConnection()).Where("email = ?", email).First(context.Background())
-	return &user
+func FindUserByEmail(email string) (*User, error) {
+	user, err := gorm.G[User](database.GetConnection()).Where("email = ?", email).First(context.Background())
+	return &user, err
 }
 
-func FindUserByUsernameAndEmail(username string, email string) *User {
-	user, _ := gorm.G[User](database.GetConnection()).Where("username = ? and email = ?", username, email).First(context.Background())
-	return &user
+func FindUserByUsernameAndEmail(username string, email string) (*User, error) {
+	user, err := gorm.G[User](database.GetConnection()).Where("username = ? and email = ?", username, email).First(context.Background())
+	return &user, err
 }
 
 func SaveUser(user *User) error {

@@ -44,6 +44,5 @@ func main() {
 
 	//words
 	v1.GET("/words", handlers.HandleGetWords)
-
 	router.RunTLS(":42069", "server.crt", "server.key")
 }

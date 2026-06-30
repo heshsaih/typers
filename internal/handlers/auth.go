@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,11 +10,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=32"`
+}
+
+type LoginResponse struct {
+	error string
 }
 
 type SignInRequest struct {
@@ -22,30 +28,34 @@ type SignInRequest struct {
 	Password string `json:"password" binding:"required,min=8,max=32"`
 }
 
+type SignInResponse struct {
+	error string
+}
+
 func HandleLogin(ctx *gin.Context) {
 	var body LoginRequest
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		log.Printf("failed to login %v, error: %v", body, err)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid json",
+		ctx.JSON(http.StatusBadRequest, LoginResponse{
+			error: "invalid body",
 		})
 		return
 	}
 
-	user := repository.FindUserByEmail(body.Email)
-	if user == nil {
+	user, err := repository.FindUserByEmail(body.Email)
+	if err == nil {
 		log.Printf("user %v not found", body)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "user not found",
+		ctx.JSON(http.StatusBadRequest, LoginResponse{
+			error: "user not found",
 		})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
 		log.Printf("invalid password, error: %v", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid password",
+		ctx.JSON(http.StatusBadRequest, LoginResponse{
+			error: "invalid password",
 		})
 		return
 	}
@@ -53,29 +63,33 @@ func HandleLogin(ctx *gin.Context) {
 	token, err := util.CreateJWT(user)
 	if err != nil {
 		log.Printf("failed to sign jwt, error: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to sign jwt",
+		ctx.JSON(http.StatusInternalServerError, LoginResponse{
+			error: "internal server error",
 		})
 		return
 	}
 
 	ctx.Header("Authorization", fmt.Sprintf("Bearer %v", token))
-	ctx.JSON(http.StatusOK, nil)
+	ctx.JSON(http.StatusOK, LoginResponse{
+		error: "",
+	})
 }
 
 func HandleSignIn(ctx *gin.Context) {
 	var body SignInRequest
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, "invalid json")
+		ctx.JSON(http.StatusBadRequest, SignInResponse{
+			error: "invalid json",
+		})
 		return
 	}
 
-	log.Println(body)
-
-	user := repository.FindUserByUsernameAndEmail(body.Username, body.Email)
-	if user != nil {
-		ctx.JSON(http.StatusBadRequest, "user with this username or email already exists")
+	user, err := repository.FindUserByUsernameAndEmail(body.Username, body.Email)
+	if err == nil || !errors.Is(err, gorm.ErrRecordNotFound) {
+		ctx.JSON(http.StatusBadRequest, SignInResponse{
+			error: "user already exists",
+		})
 		return
 	}
 
@@ -86,12 +100,16 @@ func HandleSignIn(ctx *gin.Context) {
 	}
 
 	if hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost); err != nil {
-		ctx.JSON(http.StatusInternalServerError, "woopsies :33")
+		ctx.JSON(http.StatusInternalServerError, SignInResponse{
+			error: "internal server error",
+		})
 		return
 	} else {
 		user.Password = string(hash)
 	}
 
 	repository.SaveUser(user)
-	ctx.JSON(http.StatusOK, "bomba")
+	ctx.JSON(http.StatusOK, SignInResponse{
+		error: "",
+	})
 }
