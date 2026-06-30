@@ -11,8 +11,11 @@ import { useAuth } from "../../hooks/use-auth";
 import { Link } from "../../components/link";
 
 const loginSchema = z.object({
-    username: z.string().min(4, "Username is too short"),
-    password: z.string().min(8, "Password is too short"),
+    email: z.email("Value must be a valid email"),
+    password: z
+        .string()
+        .min(8, "Password is too short")
+        .max(32, "Password is too long"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -36,9 +39,9 @@ export const LoginPage: FC = () => {
             <form onSubmit={handleSubmit}>
                 <Container>
                     <Input
-                        {...a.register("username")}
-                        error={a.formState.errors.username?.message}
-                        label="Username"
+                        {...a.register("email")}
+                        error={a.formState.errors.email?.message}
+                        label="E-mail"
                     ></Input>
                     <Input
                         {...a.register("password")}

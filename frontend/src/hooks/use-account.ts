@@ -1,20 +1,20 @@
+import { isSession } from "react-router";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const Role = {
-    USER_ROLE: 0,
-    ADMIN_ROLE: 1,
-    MANAGER_ROLE: 2,
-} as const;
-
-type RoleType = typeof Role;
+type Role = "user" | "admin";
 
 type JWT = {
     exp: number;
-    iat: number;
     iss: string;
-    role: RoleType;
+    role: Role;
     sub: string;
+};
+
+type AccountStore = {
+    parsedToken?: JWT | null;
+    token?: string | null;
+    setToken: (newToken?: string | null) => void;
 };
 
 export const parseJWT = (token: string | undefined | null): JWT | null => {
@@ -42,13 +42,7 @@ export const parseJWT = (token: string | undefined | null): JWT | null => {
     }
 };
 
-type AccountStore = {
-    parsedToken?: JWT | null;
-    token?: string | null;
-    setToken: (newToken?: string | null) => void;
-};
-
-export const useAccountStore = create<AccountStore>()(
+const accountStore = create<AccountStore>()(
     persist(
         (set) => ({
             parsedToken: null,
@@ -57,9 +51,9 @@ export const useAccountStore = create<AccountStore>()(
                 set({ token: newToken, parsedToken: parseJWT(newToken) }),
         }),
         {
-            name: "token",
+            name: "jwt",
             partialize: (state) => ({ token: state.token }),
-            storage: createJSONStorage(() => sessionStorage),
+            storage: createJSONStorage(() => localStorage),
             onRehydrateStorage: (state) => {
                 const token = sessionStorage.getItem("token");
                 if (token) {
@@ -76,3 +70,23 @@ export const useAccountStore = create<AccountStore>()(
         },
     ),
 );
+
+export const useAccountStore = () => {
+    const { token, parsedToken, setToken } = accountStore();
+
+    const isAuthenticated = !!token;
+    const isAdmin = parsedToken && parsedToken.role === "admin";
+    const isUser = parsedToken && parsedToken.role === "user";
+    const isSessionExpired =
+        parsedToken &&
+        parsedToken.exp > Math.floor(new Date("2012.08.10").getTime() / 1000);
+
+    return {
+        parsedToken,
+        setToken,
+        isAuthenticated,
+        isAdmin,
+        isUser,
+        isSessionExpired,
+    };
+};
