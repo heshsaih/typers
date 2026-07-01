@@ -27,35 +27,39 @@ export const TypingPage: FC = () => {
 
     return (
         <Container>
-            <Heading type="h1">
-                {state === "waiting" &&
-                    `${config.amount} ${config.type === "time" ? "seconds" : "words"}`}
-                {state === "in-progress" &&
-                    (config.type === "words"
-                        ? `${config.amount - remainingToFinish} / ${config.amount}`
-                        : `${remainingToFinish}`)}
-                {state === "finished" && "wp wp"}
-            </Heading>
-            {state !== "finished" && (
+            {words.length !== 0 && (
                 <>
-                    <ConfigDisplay disabled={state === "in-progress"}></ConfigDisplay>
-                    <InputController>
-                        <LineView containerRef={containerRef} lines={lines}></LineView>
-                    </InputController>
+                    <Heading type="h1">
+                        {state === "waiting" &&
+                            `${config.amount} ${config.type === "time" ? "seconds" : "words"}`}
+                        {state === "in-progress" &&
+                            (config.type === "words"
+                                ? `${config.amount - remainingToFinish} / ${config.amount}`
+                                : `${remainingToFinish}`)}
+                        {state === "finished" && "wp wp"}
+                    </Heading>
+                    {state !== "finished" && (
+                        <>
+                            <ConfigDisplay disabled={state === "in-progress"}></ConfigDisplay>
+                            <InputController>
+                                <LineView containerRef={containerRef} lines={lines}></LineView>
+                            </InputController>
+                        </>
+                    )}
+                    {state === "finished" && <Summary result={result}></Summary>}
+                    <Button
+                        className="text-2xl px-7 py-3.5 mt-15"
+                        onClick={() => {
+                            getNewWords();
+                            setInput("");
+                            restart();
+                            inputRef?.current?.focus();
+                        }}
+                    >
+                        reset
+                    </Button>
                 </>
             )}
-            {state === "finished" && <Summary result={result}></Summary>}
-            <Button
-                className="text-2xl px-7 py-3.5 mt-15"
-                onClick={() => {
-                    getNewWords();
-                    setInput("");
-                    restart();
-                    inputRef?.current?.focus();
-                }}
-            >
-                reset
-            </Button>
         </Container>
     );
 };

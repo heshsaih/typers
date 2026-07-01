@@ -9,6 +9,8 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../hooks/use-auth";
 import { Link } from "../../components/link";
+import { useAccountStore } from "../../hooks/use-account";
+import { useNavigate } from "react-router";
 
 const loginSchema = z.object({
     email: z.email("Value must be a valid email"),
@@ -25,6 +27,12 @@ export const LoginPage: FC = () => {
         resolver: zodResolver(loginSchema),
     });
     const { login } = useAuth();
+    const {isAuthenticated} = useAccountStore();
+    const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        navigate("/typing");
+    }
 
     const handleSubmit = a.handleSubmit((data) => {
         login.mutate(data);
@@ -39,6 +47,7 @@ export const LoginPage: FC = () => {
             <form onSubmit={handleSubmit}>
                 <Container>
                     <Input
+                        autoFocus
                         {...a.register("email")}
                         error={a.formState.errors.email?.message}
                         label="E-mail"
@@ -50,7 +59,7 @@ export const LoginPage: FC = () => {
                         type="password"
                     ></Input>
                     {login.error && (
-                        <Paragraph className="text-error">{login.error}</Paragraph>
+                        <Paragraph className="text-error">{String(login.error.response?.data.error)}</Paragraph>
                     )}
                     <Button
                         disabled={login.isPending}
@@ -61,7 +70,7 @@ export const LoginPage: FC = () => {
                     </Button>
                     <Paragraph>
                         You don't have an account yet?{" "}
-                        <Link to="/register">Register now!</Link>
+                        <Link to="/signin">Register now!</Link>
                     </Paragraph>
                 </Container>
             </form>

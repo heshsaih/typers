@@ -1,4 +1,3 @@
-import { isSession } from "react-router";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -15,6 +14,14 @@ type AccountStore = {
     parsedToken?: JWT | null;
     token?: string | null;
     setToken: (newToken?: string | null) => void;
+};
+
+export const isTokenExpired = (token?: JWT | null) => {
+    if (!token) {
+        return true;
+    }
+    const now = Math.floor(new Date().getTime() / 1000);
+    return now > token.exp;
 };
 
 export const parseJWT = (token: string | undefined | null): JWT | null => {
@@ -47,24 +54,52 @@ const accountStore = create<AccountStore>()(
         (set) => ({
             parsedToken: null,
             token: null,
-            setToken: (newToken) =>
-                set({ token: newToken, parsedToken: parseJWT(newToken) }),
+            setToken: (newToken) => {
+                const parsed = parseJWT(newToken);
+                if (parsed) {
+                    set({
+                        token: newToken,
+                        parsedToken: parsed,
+                    });
+                } else {
+                    set({
+                        token: null,
+                        parsedToken: null,
+                    });
+                }
+            },
         }),
         {
             name: "jwt",
             partialize: (state) => ({ token: state.token }),
             storage: createJSONStorage(() => localStorage),
             onRehydrateStorage: (state) => {
-                const token = sessionStorage.getItem("token");
-                if (token) {
-                    try {
-                        state.token = token;
-                        state.parsedToken = parseJWT(JSON.parse(token).state.token);
-                    } catch (_) {
-                        sessionStorage.removeItem("token");
-                        state.token = null;
-                        state.parsedToken = null;
-                    }
+                const storage = localStorage.getItem("jwt");
+                if (storage == null) {
+                    return;
+                }
+                let parsedStorage: { state: { token: string | null } } | null = null;
+                try {
+                    parsedStorage = JSON.parse(storage);
+                } catch (_) {
+                    return;
+                }
+
+                if (
+                    parsedStorage === null ||
+                    !parsedStorage.state ||
+                    !parsedStorage.state.token
+                ) {
+                    return;
+                }
+
+                const parsedToken = parseJWT(parsedStorage.state.token);
+                if (isTokenExpired(parsedToken)) {
+                    state.token = null;
+                    state.parsedToken = null;
+                } else {
+                    state.token = parsedStorage.state.token;
+                    state.parsedToken = parsedToken;
                 }
             },
         },
@@ -77,11 +112,10 @@ export const useAccountStore = () => {
     const isAuthenticated = !!token;
     const isAdmin = parsedToken && parsedToken.role === "admin";
     const isUser = parsedToken && parsedToken.role === "user";
-    const isSessionExpired =
-        parsedToken &&
-        parsedToken.exp > Math.floor(new Date("2012.08.10").getTime() / 1000);
+    const isSessionExpired = isTokenExpired(parsedToken);
 
     return {
+        token,
         parsedToken,
         setToken,
         isAuthenticated,

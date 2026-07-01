@@ -4,7 +4,7 @@ import { LoginPage } from "../pages/login";
 import { DefaultLayout } from "../layouts/default-layout";
 import { TypingPage } from "../pages/typing";
 import { GamesPage } from "../pages/games";
-import { RegisterPage } from "../pages/register";
+import { SignInPage } from "../pages/register";
 import { ProfilePage } from "../pages/profile";
 
 const routes: RouteObject[] = [
@@ -30,7 +30,7 @@ const routes: RouteObject[] = [
             },
             {
                 path: "/register",
-                Component: RegisterPage,
+                Component: SignInPage,
             },
             {
                 path: "profile",

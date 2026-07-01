@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"typers/internal/database"
 	"typers/internal/handlers"
+	"typers/internal/middleware"
 	"typers/internal/service"
 
 	"github.com/gin-contrib/cors"
@@ -35,7 +36,13 @@ func main() {
 	database.Connect(databaseCfg)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(middleware.HandleError)
+	router.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"POST, GET, PUT, PATCH, OPTIONS"},
+		AllowCredentials: true,
+		ExposeHeaders:    []string{"Authorization", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+		AllowAllOrigins:  true,
+	}))
 	v1 := router.Group("/api/v1")
 
 	//auth

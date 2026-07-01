@@ -1,8 +1,10 @@
 import "@tanstack/react-query";
-import "../types"
+import "../types";
 
 declare module "@tanstack/react-query" {
     interface Register {
-        defaultError: ErrorsValues
+        defaultError: {
+            error: string;
+        };
     }
 }

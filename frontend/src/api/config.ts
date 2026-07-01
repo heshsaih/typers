@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import axios, { type AxiosInstance } from "axios";
-import { useMemo } from "react";
+import { useAccountStore } from "../hooks/use-account";
 
 export const useTanstackQueryClient: () => QueryClient = () => {
     const client = new QueryClient();
@@ -9,26 +9,20 @@ export const useTanstackQueryClient: () => QueryClient = () => {
 };
 
 export const useAxiosClient: () => AxiosInstance = () => {
-    const client = useMemo(() => {
-        const client = axios.create({
-            baseURL: import.meta.env.VITE_API_URL,
-        });
+    const client = axios.create({
+        baseURL: import.meta.env.VITE_API_URL,
+    });
+    const { token } = useAccountStore();
 
-        axios.interceptors.request.use(
-            (req) => {
-                const token = localStorage.getItem("token");
-
-                if (token) {
-                    req.headers.Authorization = `Bearer ${token}`;
-                }
-
-                return req;
-            },
-            (err) => err,
-        );
-
-        return client;
-    }, []);
+    client.interceptors.request.use(
+        (req) => {
+            if (token) {
+                req.headers.Authorization = `Bearer ${token}`;
+            }
+            return req;
+        },
+        (err) => err
+    );
 
     return client;
 };
