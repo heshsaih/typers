@@ -26,8 +26,8 @@ func FindUserByEmail(email string) (*User, error) {
 	return &user, err
 }
 
-func FindUserByUsernameAndEmail(username string, email string) (*User, error) {
-	user, err := gorm.G[User](database.GetConnection()).Where("username = ? and email = ?", username, email).First(context.Background())
+func FindUserByUsernameOrEmail(username string, email string) (*User, error) {
+	user, err := gorm.G[User](database.GetConnection()).Where("username = ? or email = ?", username, email).First(context.Background())
 	return &user, err
 }
 

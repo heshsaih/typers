@@ -4,8 +4,8 @@ import { LoginPage } from "./pages/login";
 import { DefaultLayout } from "./layouts/default-layout";
 import { TypingPage } from "./pages/typing";
 import { GamesPage } from "./pages/games";
-import { RegisterPage } from "./pages/register";
 import { ProfilePage } from "./pages/profile";
+import { SignInPage } from "./pages/signin";
 
 const routes: RouteObject[] = [
     {
@@ -29,8 +29,8 @@ const routes: RouteObject[] = [
                 Component: GamesPage,
             },
             {
-                path: "/register",
-                Component: RegisterPage,
+                path: "/signin",
+                Component: SignInPage
             },
             {
                 path: "profile",

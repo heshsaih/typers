@@ -3,8 +3,8 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
+	"typers/internal/logger"
 	"typers/internal/repository"
 	"typers/internal/util"
 
@@ -25,31 +25,40 @@ type SignInRequest struct {
 }
 
 func HandleLogin(ctx *gin.Context) {
+	log := logger.Default(ctx)
 	var body LoginRequest
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		log.Printf("failed to login %v, error: %v", body, err)
-		util.PassErrorToContext(ctx, http.StatusBadRequest, "Invalid JSON")
+		log.Error("invalid json", "error", err.Error())
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{
+			Error: INVALID_BODY_MESSAGE,
+		})
 		return
 	}
 
 	user, err := repository.FindUserByEmail(body.Email)
-	if errors.Is(err, gorm.ErrRecordNotFound)  {
-		log.Printf("user %v not found", body)
-		util.PassErrorToContext(ctx, http.StatusBadRequest, "User not found")
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Error("user not found")
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{
+			Error: "incorrect credentials",
+		})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
-		log.Printf("invalid password, error: %v", err)
-		util.PassErrorToContext(ctx, http.StatusBadRequest, "Password was incorrect")
+		log.Error("invalid credentials")
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{
+			Error: "incorrect credentials",
+		})
 		return
 	}
 
 	token, err := util.CreateJWT(user)
 	if err != nil {
-		log.Printf("failed to sign jwt, error: %v", err)
-		util.PassInternalServerErrorToContext(ctx)
+		log.Error("failed to sign jwt", "error", err.Error())
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error: INTERNAL_SERVER_ERROR_MESSAGE,
+		})
 		return
 	}
 
@@ -59,15 +68,22 @@ func HandleLogin(ctx *gin.Context) {
 
 func HandleSignIn(ctx *gin.Context) {
 	var body SignInRequest
+	log := logger.Default(ctx)
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		util.PassErrorToContext(ctx, http.StatusBadRequest, "Invalid JSON")
+		log.Error("invalid json", "error", err.Error())
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{
+			Error: INVALID_BODY_MESSAGE,
+		})
 		return
 	}
 
-	user, err := repository.FindUserByUsernameAndEmail(body.Username, body.Email)
+	user, err := repository.FindUserByUsernameOrEmail(body.Username, body.Email)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		util.PassErrorToContext(ctx, http.StatusBadRequest, "This email/username is already taken")
+		log.Error("user already exists")
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{
+			Error: "username or email taken",
+		})
 		return
 	}
 
@@ -78,20 +94,28 @@ func HandleSignIn(ctx *gin.Context) {
 	}
 
 	if hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost); err != nil {
-		util.PassInternalServerErrorToContext(ctx)
+		log.Error("failed to hash password", "error", err.Error())
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error: INTERNAL_SERVER_ERROR_MESSAGE,
+		})
 		return
 	} else {
 		user.Password = string(hash)
 	}
 
 	if err := repository.SaveUser(user); err != nil {
-		util.PassInternalServerErrorToContext(ctx)
+		log.Error("failed to save user", "error", err.Error())
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error: INTERNAL_SERVER_ERROR_MESSAGE,
+		})
 		return
 	}
 
 	if jwt, err := util.CreateJWT(user); err != nil {
-		util.PassInternalServerErrorToContext(ctx)
-		return
+		log.Error("failed to create jwt", "error", err.Error())
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error: INTERNAL_SERVER_ERROR_MESSAGE,
+		})
 	} else {
 		ctx.Header("Authorization", fmt.Sprintf("Bearer %v", jwt))
 	}

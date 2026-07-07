@@ -19,6 +19,8 @@ func main() {
 		log.Fatal("failed to load env: ", err)
 	}
 
+	log.Println("failed to load env: ")
+
 	service.LoadWords()
 
 	databaseCfg := database.DatabseConnectionConfig{
@@ -36,13 +38,14 @@ func main() {
 	database.Connect(databaseCfg)
 
 	router := gin.Default()
-	router.Use(middleware.HandleError)
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"POST, GET, PUT, PATCH, OPTIONS"},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
-		ExposeHeaders:    []string{"Authorization", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+		ExposeHeaders:    []string{"Authorization", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Request-Id"},
 		AllowAllOrigins:  true,
 	}))
+	router.Use(middleware.LogRequestMiddleware)
 	v1 := router.Group("/api/v1")
 
 	//auth
