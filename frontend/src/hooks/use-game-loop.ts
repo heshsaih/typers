@@ -53,7 +53,6 @@ const calculateResult = (
         extra: 0,
         missing: 0,
     };
-
     const amount = Math.min(inputWords.length, placeholders.length);
 
     for (let i = 0; i < amount; i++) {
