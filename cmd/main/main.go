@@ -19,8 +19,6 @@ func main() {
 		log.Fatal("failed to load env: ", err)
 	}
 
-	log.Println("failed to load env: ")
-
 	service.LoadWords()
 
 	databaseCfg := database.DatabseConnectionConfig{
@@ -54,5 +52,9 @@ func main() {
 
 	//words
 	v1.GET("/words", handlers.HandleGetWords)
+
+	//scores
+	v1.GET("/scores/submit", handlers.HandleSubmitScore)
+
 	router.RunTLS(":42069", "server.crt", "server.key")
 }

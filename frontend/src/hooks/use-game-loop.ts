@@ -39,14 +39,12 @@ const calculateResult = (
     timeMeasurements: TimeMeasurement[],
 ): GameResult => {
     const startTime = timeMeasurements[0].time;
-    const endTime = timeMeasurements[timeMeasurements.length - 1].time;
-    const time = endTime - startTime;
     const inputWords = input.split(" ");
 
-    const wpm = inputWords.length * (60_000 / time);
+    const wpm = inputWords.length / timeMeasurements.length * 60;
     timeMeasurements = timeMeasurements.map((measurement) => ({
         words: measurement.words,
-        time: Math.floor((measurement.time - startTime) / 1000),
+        time: Math.floor((measurement.time - startTime) / 1000) + 1,
     }));
     let accurateWords = 0;
     const letterStatistics: LetterStatistics = {
@@ -129,8 +127,8 @@ export const useTimeGameLoop = (): GameLoop => {
         setTimeMeasurements(newTimeMeasurements);
 
         if (newTime === 0) {
-            finish();
             setResult(calculateResult(input, words, newTimeMeasurements));
+            finish();
         }
     };
 
