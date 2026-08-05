@@ -10,6 +10,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
+import { JsonDisplay } from "../../components/json-display";
 
 type SummaryProps = {
     result?: GameResult;
@@ -54,7 +55,7 @@ export const Summary: FC<SummaryProps> = ({ result }) => {
                     />
                 </LineChart>
             </ResponsiveContainer>
-            <span>{JSON.stringify(result, null, 4)}</span>
+            <JsonDisplay data={result}></JsonDisplay>
         </Container>
     );
 };
