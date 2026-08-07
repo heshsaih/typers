@@ -36,7 +36,7 @@ export const TypingPage: FC = () => {
                             (config.type === "words"
                                 ? `${config.amount - remainingToFinish} / ${config.amount}`
                                 : `${remainingToFinish}`)}
-                        {state === "finished" && "wp wp"}
+                        {state === "finished" && `${result?.wpm} wpm`}
                     </Heading>
                     {state !== "finished" && (
                         <>
@@ -46,7 +46,7 @@ export const TypingPage: FC = () => {
                             </InputController>
                         </>
                     )}
-                    {state === "finished" && <Summary result={result}></Summary>}
+                    {state === "finished" && result &&  <Summary result={result}></Summary>}
                     <Button
                         className="text-2xl px-7 py-3.5 mt-15"
                         onClick={() => {
