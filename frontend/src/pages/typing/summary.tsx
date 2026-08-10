@@ -11,6 +11,8 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { JsonDisplay } from "../../components/json-display";
+import { useGameConfig } from "../../hooks/use-game-config";
+import { round } from "../../util";
 
 type SummaryProps = {
     result: GameResult;
@@ -19,11 +21,13 @@ type SummaryProps = {
 export const Summary: FC<SummaryProps> = ({ result }) => {
     const data = result.timeMeasurements.map((a) => ({
         time: a.time,
-        wpm: Math.round(((a.words / a.time) * 60 + Number.EPSILON) * 100) / 100,
+        wpm: round(a.words / a.time * 60, 2),
     }));
+    const {config} = useGameConfig();
 
     return (
         <Container>
+            <JsonDisplay label="config" inline data={config}></JsonDisplay>
             <ResponsiveContainer width={"100%"} height={400}>
                 <LineChart
                     data={data}
@@ -60,12 +64,13 @@ export const Summary: FC<SummaryProps> = ({ result }) => {
             </ResponsiveContainer>
             <div className="flex justify-center w-full">
                 <JsonDisplay
+                    label="test stats"
                     data={{
-                        wpm: result.wpm,
-                        accuracy: `${Math.round((result.accuracy * 100 + Number.EPSILON) * 100) / 100}%`,
+                        wpm: round(result.wpm, 2),
+                        accuracy: `${round(result.accuracy * 100, 2)}%`,
                     }}
                 ></JsonDisplay>
-                <JsonDisplay data={result.letterStatistics}></JsonDisplay>
+                <JsonDisplay label="letter stats" data={result.letterStatistics}></JsonDisplay>
             </div>
         </Container>
     );

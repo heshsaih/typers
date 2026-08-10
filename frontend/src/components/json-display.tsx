@@ -2,6 +2,8 @@ import { isValidElement, type FC, type JSX } from "react";
 
 type JsonDisplayProps = {
     data?: object;
+    inline?: boolean;
+    label?: string;
 };
 
 function renderIndent(indent: number): JSX.Element {
@@ -14,10 +16,17 @@ function renderIndent(indent: number): JSX.Element {
     );
 }
 
-function determineAction(key: string, value: any, indent: number) {
+function determineAction(
+    key: string,
+    value: any,
+    indent: number,
+    inline: boolean,
+) {
     if (isValidElement(value)) {
         return renderElement(key, value, indent);
     }
+
+    indent = inline ? 1 : indent;
 
     switch (typeof value) {
         case "string":
@@ -29,7 +38,7 @@ function determineAction(key: string, value: any, indent: number) {
         case "object":
             return value === null
                 ? renderNull(key, indent)
-                : renderObject(key, value, indent);
+                : renderObject(key, value, indent, inline);
         default:
             return renderUnsupported(key, indent);
     }
@@ -85,6 +94,7 @@ function renderBoolean(
         <span>
             {renderIndent(indent)}"{key}"
             <span className="text-accent-primary">: </span>
+            {bool ? "true" : "false"}
             {bool}
         </span>
     );
@@ -103,37 +113,41 @@ function renderObject(
     key: string | null,
     obj: object,
     indent: number,
+    inline: boolean,
 ): JSX.Element {
     if (key === null) {
         return (
-            <div className="flex flex-col">
+            <div className={`flex ${inline ? "" : "flex-col"}`}>
                 {Object.keys(obj).map((key) =>
-                    determineAction(key, obj[key as keyof typeof obj], indent),
+                    determineAction(key, obj[key as keyof typeof obj], indent, inline),
                 )}
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col">
+        <div className={`flex ${inline ? "" : "flex-col"}`}>
             <span>
                 {renderIndent(indent)}"{key}": &#123;
             </span>
             {Object.keys(obj).map((key) =>
-                determineAction(key, obj[key as keyof typeof obj], indent + 2),
+                determineAction(key, obj[key as keyof typeof obj], indent + 2, inline),
             )}
             <span>{renderIndent(indent)}&#125;</span>
         </div>
     );
 }
 
-export const JsonDisplay: FC<JsonDisplayProps> = ({ data }) => {
+export const JsonDisplay: FC<JsonDisplayProps> = ({ data, inline = false, label }) => {
     return (
-        <div className="flex flex-col m-5 text-2xl">
-            <span className="text-text-disabled">&#123;</span>
-            {!data && <></>}
-            {renderObject(null, data as object, 2)}
-            <span className="text-text-disabled">&#125;</span>
+        <div className="m-5">
+            {label && <span className="text-text-disabled text-xl">{label}</span>}
+            <div className={`flex ${inline ? "" : "flex-col"} ml-4 mt-2 text-2xl`}>
+                <span className="text-text-disabled">&#123;</span>
+                {data && renderObject(null, data, 2, inline)}
+                {inline && renderIndent(1)}
+                <span className="text-text-disabled">&#125;</span>
+            </div>
         </div>
     );
 };

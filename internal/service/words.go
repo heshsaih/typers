@@ -13,7 +13,11 @@ func GetWords(amount int) []string {
 	result := make([]string, 0)
 
 	for range amount {
-		result = append(result, words[rand.Intn(len(words))])
+		word := words[rand.Intn(len(words))]
+		if len(word) >= 6 {
+			continue
+		}
+		result = append(result, word)
 	}
 
 	return result

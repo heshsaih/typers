@@ -10,6 +10,7 @@ import { useInputController } from "../../hooks/use-input-controller";
 import { useGameLoop } from "../../hooks/use-game-loop";
 import { useGameConfig } from "../../hooks/use-game-config";
 import { Summary } from "./summary";
+import { round } from "../../util";
 
 export const TypingPage: FC = () => {
     const { config, words, getNewWords } = useGameConfig();
@@ -36,7 +37,7 @@ export const TypingPage: FC = () => {
                             (config.type === "words"
                                 ? `${config.amount - remainingToFinish} / ${config.amount}`
                                 : `${remainingToFinish}`)}
-                        {state === "finished" && `${result?.wpm} wpm`}
+                        {state === "finished" && `${round(result?.wpm!, 2)} wpm`}
                     </Heading>
                     {state !== "finished" && (
                         <>
