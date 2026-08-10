@@ -21,27 +21,46 @@ function determineAction(
     value: any,
     indent: number,
     inline: boolean,
-) {
+    lastElement: boolean,
+): JSX.Element {
     if (isValidElement(value)) {
-        return renderElement(key, value, indent);
+        return (
+            <>
+                {renderElement(key, value, indent)}
+                {!lastElement && ","}
+            </>
+        );
     }
 
     indent = inline ? 1 : indent;
+    let action: JSX.Element;
 
     switch (typeof value) {
         case "string":
-            return renderString(key, value, indent);
+            action = renderString(key, value, indent);
+            break;
         case "number":
-            return renderNumber(key, value, indent);
+            action = renderNumber(key, value, indent);
+            break;
         case "boolean":
-            return renderBoolean(key, value, indent);
+            action = renderBoolean(key, value, indent);
+            break;
         case "object":
-            return value === null
-                ? renderNull(key, indent)
-                : renderObject(key, value, indent, inline);
+            action =
+                value === null
+                    ? renderNull(key, indent)
+                    : renderObject(key, value, indent, inline);
+            break;
         default:
-            return renderUnsupported(key, indent);
+            action = renderUnsupported(key, indent);
     }
+
+    return (
+        <>
+            {action}
+            {!lastElement && <span className="text-text-disabled">, </span>}
+        </>
+    );
 }
 
 function renderElement(
@@ -115,12 +134,21 @@ function renderObject(
     indent: number,
     inline: boolean,
 ): JSX.Element {
+    const keys = Object.keys(obj);
     if (key === null) {
         return (
             <div className={`flex ${inline ? "" : "flex-col"}`}>
-                {Object.keys(obj).map((key) =>
-                    determineAction(key, obj[key as keyof typeof obj], indent, inline),
-                )}
+                {keys.map((key, index) => (
+                    <span>
+                        {determineAction(
+                            key,
+                            obj[key as keyof typeof obj],
+                            indent,
+                            inline,
+                            index === keys.length - 1,
+                        )}
+                    </span>
+                ))}
             </div>
         );
     }
@@ -130,18 +158,34 @@ function renderObject(
             <span>
                 {renderIndent(indent)}"{key}": &#123;
             </span>
-            {Object.keys(obj).map((key) =>
-                determineAction(key, obj[key as keyof typeof obj], indent + 2, inline),
-            )}
+            {keys.map((key, index) => (
+                <span>
+                    {determineAction(
+                        key,
+                        obj[key as keyof typeof obj],
+                        indent + 2,
+                        inline,
+                        index === keys.length - 1,
+                    )}
+                </span>
+            ))}
             <span>{renderIndent(indent)}&#125;</span>
         </div>
     );
 }
 
-export const JsonDisplay: FC<JsonDisplayProps> = ({ data, inline = false, label }) => {
+export const JsonDisplay: FC<JsonDisplayProps> = ({
+    data,
+    inline = false,
+    label,
+}) => {
     return (
         <div className="m-5">
-            {label && <span className="text-text-disabled text-xl">{label}</span>}
+            {label && (
+                <span className="text-text-disabled text-xl font-extrabold">
+                    {label}
+                </span>
+            )}
             <div className={`flex ${inline ? "" : "flex-col"} ml-4 mt-2 text-2xl`}>
                 <span className="text-text-disabled">&#123;</span>
                 {data && renderObject(null, data, 2, inline)}

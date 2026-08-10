@@ -21,9 +21,9 @@ type SummaryProps = {
 export const Summary: FC<SummaryProps> = ({ result }) => {
     const data = result.timeMeasurements.map((a) => ({
         time: a.time,
-        wpm: round(a.words / a.time * 60, 2),
+        wpm: round((a.words / a.time) * 60, 2),
     }));
-    const {config} = useGameConfig();
+    const { config } = useGameConfig();
 
     return (
         <Container>
@@ -62,7 +62,7 @@ export const Summary: FC<SummaryProps> = ({ result }) => {
                     />
                 </LineChart>
             </ResponsiveContainer>
-            <div className="flex justify-center w-full">
+            <div className="flex justify-around w-full">
                 <JsonDisplay
                     label="test stats"
                     data={{
@@ -70,7 +70,10 @@ export const Summary: FC<SummaryProps> = ({ result }) => {
                         accuracy: `${round(result.accuracy * 100, 2)}%`,
                     }}
                 ></JsonDisplay>
-                <JsonDisplay label="letter stats" data={result.letterStatistics}></JsonDisplay>
+                <JsonDisplay
+                    label="letter stats"
+                    data={result.letterStatistics}
+                ></JsonDisplay>
             </div>
         </Container>
     );
