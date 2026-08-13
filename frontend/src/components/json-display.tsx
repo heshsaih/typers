@@ -6,14 +6,8 @@ type JsonDisplayProps = {
     label?: string;
 };
 
-function renderIndent(indent: number): JSX.Element {
-    return (
-        <>
-            {new Array(indent).fill(" ").map((_) => (
-                <>&#160;</>
-            ))}
-        </>
-    );
+function renderIndent(indent: number): string {
+    return "\u00A0".repeat(indent)
 }
 
 function determineAction(
