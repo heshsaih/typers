@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { useEffect, type FC } from "react";
 import type { GameResult } from "../../hooks/use-game-loop";
 import { Container } from "../../components/container";
 import {
@@ -19,6 +19,12 @@ type SummaryProps = {
 };
 
 export const Summary: FC<SummaryProps> = ({ result }) => {
+    useEffect(() => {
+        if (result.timeMeasurements.length === 0)  {
+            alert("what")
+        }
+    }, []);
+
     const data = result.timeMeasurements.map((a) => ({
         time: a.time,
         wpm: round((a.words / a.time) * 60, 2),

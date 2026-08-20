@@ -13,7 +13,7 @@ type ViewWindow = {
     high: number;
 };
 
-const LINE_AMOUNT = 5 as const;
+const LINE_AMOUNT = 3 as const;
 
 export const LineView: FC<LineViewProps> = ({ lines, containerRef }) => {
     const { input, hasFocus } = useInputController();

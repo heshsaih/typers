@@ -9,8 +9,6 @@ import { Dropdown } from "./dropdown/dropdown";
 import { DropdownButton } from "./dropdown/dropdown-button";
 import { useInputController } from "../hooks/use-input-controller";
 import { JsonDisplay } from "./json-display";
-import { Button } from "./button";
-import { TransparentButton } from "./transparent-button";
 
 type ConfigDisplayProps = {
     disabled?: boolean;
@@ -31,6 +29,7 @@ export const ConfigDisplay: FC<ConfigDisplayProps> = ({ disabled }) => {
         >
             <JsonDisplay
                 inline
+                label="config"
                 data={{
                     type: (
                         <Dropdown

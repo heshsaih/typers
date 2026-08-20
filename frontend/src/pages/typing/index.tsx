@@ -49,7 +49,7 @@ export const TypingPage: FC = () => {
                     )}
                     {state === "finished" && result &&  <Summary result={result}></Summary>}
                     <Button
-                        className="text-2xl px-7 py-3.5 mt-15"
+                        className="text-2xl px-7 py-3 mt-15"
                         onClick={() => {
                             getNewWords();
                             setInput("");
